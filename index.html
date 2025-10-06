@@ -492,11 +492,28 @@
     }
 
     function fmtDateDisplay(v) {
+      if (!v) return '-';
+      
+      // If it's a Date object
       if (v instanceof Date && !isNaN(v)) {
-        return v.toISOString().slice(0, 10);
+        return v.toLocaleDateString('th-TH', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit'
+        });
       }
+
+      // Try parsing Thai date
       const d = parseThaiDate(v);
-      return d ? d.toISOString().slice(0, 10) : (v || '-');
+      if (d) {
+        return d.toLocaleDateString('th-TH', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit'
+        });
+      }
+
+      return v || '-';
     }
 
     function getUniqueValues(arr, key) {
@@ -632,10 +649,23 @@
       const category = document.getElementById('categoryFilter').value;
       const dateKey = document.getElementById('dateSourceFilter').value || 'Deadline';
 
+      // Fix date filtering
+      let dateFrom = null;
+      let dateTo = null;
+      
       const dfStr = document.getElementById('dateFrom').value;
       const dtStr = document.getElementById('dateTo').value;
-      const dateFrom = dfStr ? new Date(dfStr + 'T00:00:00') : null;
-      const dateTo   = dtStr ? new Date(dtStr + 'T23:59:59') : null;
+      
+      if (dfStr) {
+        dateFrom = new Date(dfStr);
+        dateFrom.setHours(0, 0, 0, 0);
+      }
+      
+      if (dtStr) {
+        dateTo = new Date(dtStr);
+        dateTo.setHours(23, 59, 59, 999);
+      }
+
       const useDateRange = !!(dateFrom || dateTo);
 
       filteredData = data.filter(row => {
@@ -643,7 +673,7 @@
         const rowCategory = getCategory(row);
 
         const matchSearch = !search || [
-          row.Project, row.Product, row.Remark, row.Type, row.Platform, row['Master / AW']
+          row.Project, row.Product, row.Remark, row.Type, row.Platform
         ].some(field => (field || '').toString().toLowerCase().includes(search));
 
         const matchPlatform = !platform || row.Platform === platform;
@@ -651,15 +681,14 @@
         const matchStatus = !status || rowStatus === status;
         const matchCategory = !category || rowCategory === category;
 
-        const baseDateRaw = row[dateKey];
-        const baseDate = baseDateRaw ? parseThaiDate(baseDateRaw) : null;
-
-        // ถ้ากำหนดช่วงวันที่ แต่แถวไม่มีวันที่ -> ไม่ผ่าน
-        if (useDateRange && !baseDate) return false;
-
+        // Improved date filtering
         let matchDate = true;
-        if (useDateRange && baseDate){
-          matchDate = (!dateFrom || baseDate >= dateFrom) && (!dateTo || baseDate <= dateTo);
+        if (useDateRange) {
+          const baseDate = parseThaiDate(row[dateKey]);
+          if (!baseDate) return false;
+
+          if (dateFrom && baseDate < dateFrom) return false;
+          if (dateTo && baseDate > dateTo) return false;
         }
 
         return matchSearch && matchPlatform && matchDesigner && matchStatus && matchCategory && matchDate;
@@ -970,28 +999,43 @@
 
     // PDF Export
     document.getElementById('exportBtn').addEventListener('click', async () => {
-      const dashboard = document.getElementById('dashboardView');
-      const canvas = await html2canvas(dashboard, {
-        scale: 2,
-        backgroundColor: '#0a0e1a',
-        logging: false
-      });
+      try {
+        const dashboard = document.getElementById('dashboardView');
+        dashboard.style.background = '#0a0e1a'; // Force background for PDF
+        
+        const canvas = await html2canvas(dashboard, {
+          scale: 2,
+          backgroundColor: '#0a0e1a',
+          logging: false,
+          allowTaint: true,
+          useCORS: true,
+          scrollY: -window.scrollY // Fix scrolling issues
+        });
 
-      const imgData = canvas.toDataURL('image/png');
-      const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF('landscape', 'pt', 'a4');
+        const imgData = canvas.toDataURL('image/png');
+        const { jsPDF } = window.jspdf;
+        
+        if (!jsPDF) {
+          throw new Error('jsPDF not loaded');
+        }
 
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      const imgWidth = pageWidth - 40;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        const pdf = new jsPDF('landscape', 'pt', 'a4');
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        const imgWidth = pageWidth - 40;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-      pdf.text('TVD Content Dashboard Report', 20, 30);
-      pdf.addImage(imgData, 'PNG', 20, 50, imgWidth, Math.min(imgHeight, pageHeight - 70));
+        pdf.text('TVD Content Dashboard Report', 20, 30);
+        pdf.addImage(imgData, 'PNG', 20, 50, imgWidth, Math.min(imgHeight, pageHeight - 70));
 
-      const d = new Date();
-      const filename = `tvd-dashboard-${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}.pdf`;
-      pdf.save(filename);
+        const d = new Date();
+        const filename = `tvd-dashboard-${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}.pdf`;
+        pdf.save(filename);
+
+      } catch (error) {
+        console.error('PDF Export error:', error);
+        alert('ไม่สามารถสร้าง PDF ได้ กรุณาลองใหม่อีกครั้ง');
+      }
     });
 
     // Sorting
