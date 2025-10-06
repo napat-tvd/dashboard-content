@@ -182,7 +182,19 @@
     button.primary:hover { box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); }
 
     /* ====== KPI ====== */
-    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .kpi-grid { 
+      display: grid;
+      gap: 16px;
+      margin-bottom: 24px;
+      grid-template-rows: auto auto;
+    }
+    
+    .kpi-row {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(4, 1fr);
+    }
+    
     .kpi-card {
       background: var(--bg-card); backdrop-filter: blur(12px); border: 1px solid var(--border);
       border-radius: 16px; padding: 20px; box-shadow: var(--shadow); transition: all 0.3s;
@@ -243,7 +255,7 @@
       .header { flex-direction: column; text-align: center; }
       .status-badge { margin-left: 0; }
       .filters-grid { grid-template-columns: 1fr; }
-      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+      .kpi-row { grid-template-columns: repeat(2, 1fr); }
       .charts-grid { grid-template-columns: 1fr; }
     }
   </style>
@@ -345,37 +357,41 @@
     <div id="dashboardView">
       <!-- KPI Cards -->
       <div class="kpi-grid">
-        <div class="kpi-card">
-          <div class="kpi-label">งานทั้งหมด</div>
-          <div class="kpi-value" id="kpiTotal">0</div>
+        <div class="kpi-row">
+          <div class="kpi-card">
+            <div class="kpi-label">งานทั้งหมด</div>
+            <div class="kpi-value" id="kpiTotal">0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">✅ เสร็จแล้ว</div>
+            <div class="kpi-value" id="kpiDone">0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">⏳ อยู่ในกำหนด</div>
+            <div class="kpi-value" id="kpiOngoing">0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">⚠️ เลยกำหนด</div>
+            <div class="kpi-value" id="kpiOverdue">0</div>
+          </div>
         </div>
-        <div class="kpi-card">
-          <div class="kpi-label">✅ เสร็จแล้ว</div>
-          <div class="kpi-value" id="kpiDone">0</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">⏳ อยู่ในกำหนด</div>
-          <div class="kpi-value" id="kpiOngoing">0</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">⚠️ เลยกำหนด</div>
-          <div class="kpi-value" id="kpiOverdue">0</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">🎨 Artwork</div>
-          <div class="kpi-value" id="kpiArtwork">0</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">🎬 Video</div>
-          <div class="kpi-value" id="kpiVideo">0</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">✨ Motion</div>
-          <div class="kpi-value" id="kpiMotion">0</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">📝 Script</div>
-          <div class="kpi-value" id="kpiScript">0</div>
+        <div class="kpi-row">
+          <div class="kpi-card">
+            <div class="kpi-label">🎨 Artwork</div>
+            <div class="kpi-value" id="kpiArtwork">0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">🎬 Video</div>
+            <div class="kpi-value" id="kpiVideo">0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">✨ Motion</div>
+            <div class="kpi-value" id="kpiMotion">0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">📝 Script</div>
+            <div class="kpi-value" id="kpiScript">0</div>
+          </div>
         </div>
       </div>
 
@@ -468,52 +484,53 @@
       if (!str) return null;
       const s = String(str).trim();
 
-      // Already ISO
-      if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
-        return new Date(s + 'T00:00:00');
+      // Handle DD/MM/YYYY format from API
+      const dmyMatch = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+      if (dmyMatch) {
+        const [_, day, month, year] = dmyMatch;
+        return new Date(year, month - 1, parseInt(day));
       }
 
-      // Thai-like: 1/ต.ค./25
-      const match = s.match(/(\d{1,2})\s*\/\s*([ก-๛\.]+)\s*\/\s*(\d{2,4})/);
-      if (!match) return null;
+      // Handle ISO format if present
+      if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
+        const d = new Date(s);
+        if (!isNaN(d)) return d;
+      }
 
-      const day = +match[1];
-      const monthStr = match[2].replace(/\s+/g, '');
-      let year = +match[3];
+      // Handle Thai format (1/ต.ค./25)
+      const thMatch = s.match(/(\d{1,2})\s*\/\s*([ก-๛\.]+)\s*\/\s*(\d{2,4})/);
+      if (thMatch) {
+        const day = parseInt(thMatch[1]);
+        const monthStr = thMatch[2].replace(/\s+/g, '');
+        let year = parseInt(thMatch[3]);
+        
+        const month = TH_MONTHS[monthStr];
+        if (!month) return null;
+        
+        if (year < 100) year = 2000 + year;
+        if (year > 2400) year -= 543;
+        
+        return new Date(year, month - 1, day);
+      }
 
-      const month = TH_MONTHS[monthStr];
-      if (!month) return null;
-
-      if (year < 100) year = 2000 + year; // 25 -> 2025
-      if (year > 2400) year -= 543;       // BE -> CE
-
-      const pad = n => String(n).padStart(2, '0');
-      return new Date(`${year}-${pad(month)}-${pad(day)}T00:00:00`);
+      return null;
     }
 
     function fmtDateDisplay(v) {
       if (!v) return '-';
       
-      // If it's a Date object
-      if (v instanceof Date && !isNaN(v)) {
-        return v.toLocaleDateString('th-TH', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit'
-        });
+      // If already in DD/MM/YYYY format, return as is
+      if (typeof v === 'string' && /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(v)) {
+        return v;
       }
-
-      // Try parsing Thai date
+      
       const d = parseThaiDate(v);
-      if (d) {
-        return d.toLocaleDateString('th-TH', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit'
-        });
-      }
-
-      return v || '-';
+      if (!d) return v || '-';
+      
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const year = d.getFullYear();
+      return `${day}/${month}/${year}`;
     }
 
     function getUniqueValues(arr, key) {
