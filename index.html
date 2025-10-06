@@ -19,7 +19,7 @@
     .panel{background:linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.03));backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);box-shadow:var(--shadow)}
 
     /* Controls */
-    .controls{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr auto;gap:10px;padding:14px}
+    .controls{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr 1fr 1fr auto;gap:10px;padding:14px}
     .controls .group{display:flex;gap:10px}
     input[type="search"], select, button, .chip{appearance:none;background:#0f1731;border:1px solid #253161;color:var(--text);padding:10px 12px;border-radius:12px;outline:none}
     input[type="search"]{width:100%}
@@ -62,6 +62,13 @@
       .kpis{grid-template-columns:repeat(2,1fr)}
       table{min-width:720px}
     }
+      /* Tabs & Charts */
+    .tabs{display:flex;gap:8px;padding:0 14px 8px}
+    .tab{background:#0f1731;border:1px solid #253161;color:var(--text);padding:8px 12px;border-radius:12px;cursor:pointer}
+    .tab.active{background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border-color:#3a4aa0}
+    .hidden{display:none}
+    .charts{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:12px;padding:0 14px 14px}
+    canvas{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:10px}
   </style>
 </head>
 <body>
@@ -80,23 +87,47 @@
         <select id="plat"><option value="">ทุกแพลตฟอร์ม</option></select>
         <select id="designer"><option value="">ทุกดีไซเนอร์</option></select>
         <select id="status"><option value="">ทุกสถานะ</option><option value="เสร็จแล้ว">เสร็จแล้ว</option><option value="อยู่ในกำหนด">อยู่ในกำหนด</option><option value="เลยกำหนด">เลยกำหนด</option><option value="ยังไม่ได้กำหนด">ยังไม่ได้กำหนด</option></select>
+        <select id="category">
+          <option value="">ทุกหมวดงาน</option>
+          <option value="artwork">Artwork (ออกแบบใหม่)</option>
+          <option value="video">Video (ตัดคลิปโซเชียล)</option>
+          <option value="motion">Motion (Motion Graphic)</option>
+          <option value="script">Script ออกกอง (จองคิวถ่ายงาน)</option>
+        </select>
+        <div class="group">
+          <input id="dateFrom" type="date" title="ตั้งแต่วันที่ (อิง Deadline)" />
+          <input id="dateTo" type="date" title="ถึงวันที่ (อิง Deadline)" />
+        </div>
         <div class="group">
           <button id="importCsv" class="ghost">นำเข้า CSV</button>
           <button id="reset">รีเซ็ต</button>
         </div>
       </div>
-      <div class="kpis">
-        <div class="kpi"><h3>งานทั้งหมด</h3><div id="kTotal" class="num">0</div></div>
-        <div class="kpi"><h3>เสร็จแล้ว</h3><div id="kDone" class="num">0</div></div>
-        <div class="kpi"><h3>อยู่ในกำหนด</h3><div id="kOngo" class="num">0</div></div>
-        <div class="kpi"><h3>เลยกำหนด</h3><div id="kOver" class="num">0</div></div>
-        <div class="kpi"><h3>งาน Artwork</h3><div id="kArt" class="num">0</div></div>
-        <div class="kpi"><h3>งาน Video</h3><div id="kVid" class="num">0</div></div>
-        <div class="kpi"><h3>งาน Motion</h3><div id="kMot" class="num">0</div></div>
-        <div class="kpi"><h3>Script ออกกอง</h3><div id="kScr" class="num">0</div></div>
+      <div class="tabs">
+        <button class="tab active" data-page="pageDash">Dashboard</button>
+        <button class="tab" data-page="pageDetails">รายการงาน</button>
       </div>
 
-      <div class="table-wrap">
+      <div id="pageDash">
+        <div class="kpis">
+          <div class="kpi"><h3>งานทั้งหมด</h3><div id="kTotal" class="num">0</div></div>
+          <div class="kpi"><h3>เสร็จแล้ว</h3><div id="kDone" class="num">0</div></div>
+          <div class="kpi"><h3>อยู่ในกำหนด</h3><div id="kOngo" class="num">0</div></div>
+          <div class="kpi"><h3>เลยกำหนด</h3><div id="kOver" class="num">0</div></div>
+          <div class="kpi"><h3>งาน Artwork</h3><div id="kArt" class="num">0</div></div>
+          <div class="kpi"><h3>งาน Video</h3><div id="kVid" class="num">0</div></div>
+          <div class="kpi"><h3>งาน Motion</h3><div id="kMot" class="num">0</div></div>
+          <div class="kpi"><h3>Script ออกกอง</h3><div id="kScr" class="num">0</div></div>
+        </div>
+        <div class="charts">
+          <canvas id="chStatus" height="220"></canvas>
+          <canvas id="chPlatform" height="220"></canvas>
+          <canvas id="chType" height="220"></canvas>
+        </div>
+      </div>
+
+      <div id="pageDetails" class="hidden">
+        <div class="table-wrap">
         <div style="overflow:auto;border-radius:0 0 var(--radius) var(--radius);border-top:1px solid rgba(255,255,255,.06)">
           <table id="tbl">
             <thead>
@@ -122,6 +153,7 @@
           </table>
         </div>
       </div>
+    </div>
 
       <div class="foot">
         <div class="small">CSV header ที่รองรับ: จำนวนชิ้น,Platform,Product,Type,Project,Footage / Brief,Remark,Assignor,Date,MaxDate,Month,On-Going,Deadline,Designer,Finish,Master / AW,Status,Approved</div>
@@ -132,6 +164,7 @@
 
   <input id="file" type="file" accept=".csv" style="display:none" />
 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     // ---------- Utilities ----------
     const TH_MONTHS = {"ม.ค.":1,"ก.พ.":2,"มี.ค.":3,"เม.ย.":4,"พ.ค.":5,"มิ.ย.":6,"ก.ค.":7,"ส.ค.":8,"ก.ย.":9,"ต.ค.":10,"พ.ย.":11,"ธ.ค.":12};
@@ -192,10 +225,12 @@
 
     let rows = seed.map(r => ({...r}));
     let sortKey = 'row', sortDir = 1; // 1 asc, -1 desc
+    let chStatus, chPlatform, chType; // 1 asc, -1 desc
 
     // ---------- Rendering ----------
     const els = {
-      q: document.getElementById('q'), plat: document.getElementById('plat'), designer: document.getElementById('designer'), status: document.getElementById('status'),
+      q: document.getElementById('q'), plat: document.getElementById('plat'), designer: document.getElementById('designer'), status: document.getElementById('status'), category: document.getElementById('category'),
+      dateFrom: document.getElementById('dateFrom'), dateTo: document.getElementById('dateTo'),
       kTotal: document.getElementById('kTotal'), kDone: document.getElementById('kDone'), kOngo: document.getElementById('kOngo'), kOver: document.getElementById('kOver'),
       kArt: document.getElementById('kArt'), kVid: document.getElementById('kVid'), kMot: document.getElementById('kMot'), kScr: document.getElementById('kScr'),
       tbody: document.querySelector('#tbl tbody'),
@@ -216,17 +251,40 @@
       }
     }
 
+    function categoryOf(r){
+      const t = (r.Type||'').toString().toLowerCase();
+      if(t.includes('ออกแบบใหม่')) return 'artwork';
+      if(t.includes('ตัดคลิปโซเชียล')) return 'video';
+      if(t.includes('motion graphic')) return 'motion';
+      if(t.includes('จองคิวถ่ายงาน')) return 'script';
+      return '';
+    }
+
     function applyFilters(){
       const q = els.q.value.trim().toLowerCase();
-      const pf = els.plat.value; const ds = els.designer.value; const st = els.status.value;
+      const pf = els.plat.value; const ds = els.designer.value; const st = els.status.value; const cat = els.category.value;
+      const df = els.dateFrom.value ? new Date(els.dateFrom.value+'T00:00:00') : null;
+      const dt = els.dateTo.value ? new Date(els.dateTo.value+'T23:59:59') : null;
+
       const filtered = rows.filter(r => {
         const s = computeStatus(r);
         const matchQ = !q || [r.Project,r.Product,r.Remark,r['Master / AW'],r.Type,r.Platform,r.Designer].some(x => (x||'').toString().toLowerCase().includes(q));
         const matchPlat = !pf || r.Platform === pf;
         const matchDes = !ds || r.Designer === ds;
         const matchSt = !st || s === st;
-        return matchQ && matchPlat && matchDes && matchSt;
+        const matchCat = !cat || categoryOf(r) === cat;
+        const ddl = parseThaiDate(r.Deadline);
+        const matchDate = (!df && !dt) || (ddl && (!df || ddl>=df) && (!dt || ddl<=dt));
+        return matchQ && matchPlat && matchDes && matchSt && matchCat && matchDate;
       });
+      updateKPIs(filtered);
+      renderCharts(filtered);
+      renderTable(filtered);
+    });
+      updateKPIs(filtered);
+      renderCharts(filtered);
+      renderTable(filtered);
+    });
       updateKPIs(filtered);
       renderTable(filtered);
     }
@@ -242,6 +300,39 @@
       els.kVid.textContent = list.filter(r=> t(r.Type).includes('ตัดคลิปโซเชียล')).length;
       els.kMot.textContent = list.filter(r=> t(r.Type).includes('motion graphic')).length;
       els.kScr.textContent = list.filter(r=> t(r.Type).includes('จองคิวถ่ายงาน')).length;
+    }
+
+    function renderCharts(list){
+      const byStatus = ['เสร็จแล้ว','อยู่ในกำหนด','เลยกำหนด','ยังไม่ได้กำหนด'].map(s => list.filter(r=>computeStatus(r)===s).length);
+      const plats = [...new Set(list.map(r=>r.Platform).filter(Boolean))];
+      const byPlat = plats.map(p => list.filter(r=>r.Platform===p).length);
+      const t = s=> (s||'').toString().toLowerCase();
+      const typeBuckets = ['ออกแบบใหม่','ตัดคลิปโซเชียล','motion graphic','จองคิวถ่ายงาน'];
+      const byType = typeBuckets.map(key => list.filter(r=> t(r.Type).includes(key)).length);
+
+      // Status doughnut
+      const statusCfg = {
+        type:'doughnut',
+        data:{labels:['เสร็จแล้ว','อยู่ในกำหนด','เลยกำหนด','ยังไม่ได้กำหนด'], datasets:[{data:byStatus}]},
+        options:{plugins:{legend:{position:'bottom'}}, cutout:'60%'}
+      };
+      if(!chStatus){ chStatus = new Chart(document.getElementById('chStatus'), statusCfg); } else { chStatus.data.datasets[0].data = byStatus; chStatus.update(); }
+
+      // Platform bar
+      const platCfg = {
+        type:'bar',
+        data:{labels:plats, datasets:[{label:'จำนวนงาน', data:byPlat}]} ,
+        options:{plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}}}
+      };
+      if(!chPlatform){ chPlatform = new Chart(document.getElementById('chPlatform'), platCfg); } else { chPlatform.data.labels = plats; chPlatform.data.datasets[0].data = byPlat; chPlatform.update(); }
+
+      // Type bar
+      const typeCfg = {
+        type:'bar',
+        data:{labels:['Artwork','Video','Motion','Script ออกกอง'], datasets:[{label:'จำนวนงาน', data:byType}]},
+        options:{plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}}}
+      };
+      if(!chType){ chType = new Chart(document.getElementById('chType'), typeCfg); } else { chType.data.datasets[0].data = byType; chType.update(); }
     }
 
     function compare(a,b,key){
@@ -331,18 +422,24 @@
     }
 
     // ---------- Events ----------
-    document.querySelectorAll('#tbl thead th').forEach(th=>{
-      th.addEventListener('click', ()=>{
-        const key = th.getAttribute('data-key');
-        if(!key) return; if(sortKey===key) sortDir*=-1; else {sortKey=key; sortDir=1}
-        applyFilters();
-      })
-    })
+    // Tabs switching
+    const tabs = document.querySelectorAll('.tab');
+    const pages = { pageDash: document.getElementById('pageDash'), pageDetails: document.getElementById('pageDetails') };
+    tabs.forEach(btn=> btn.addEventListener('click', ()=>{
+      tabs.forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      const target = btn.getAttribute('data-page');
+      Object.entries(pages).forEach(([k,el])=> el.classList.toggle('hidden', k!==target));
+    }));
 
+    // Filters
     els.q.addEventListener('input', applyFilters);
     els.plat.addEventListener('change', applyFilters);
     els.designer.addEventListener('change', applyFilters);
     els.status.addEventListener('change', applyFilters);
+    els.category.addEventListener('change', applyFilters);
+    els.dateFrom.addEventListener('change', applyFilters);
+    els.dateTo.addEventListener('change', applyFilters);
 
     els.import.addEventListener('click', ()=> els.file.click());
     els.file.addEventListener('change', e=>{
@@ -361,7 +458,8 @@
     });
 
     els.reset.addEventListener('click', ()=>{
-      els.q.value=''; els.plat.value=''; els.designer.value=''; els.status.value=''; sortKey='row'; sortDir=1; applyFilters();
+      els.q.value=''; els.plat.value=''; els.designer.value=''; els.status.value=''; els.category.value='';
+      els.dateFrom.value=''; els.dateTo.value=''; sortKey='row'; sortDir=1; applyFilters();
     });
 
     // ---------- Init ----------
