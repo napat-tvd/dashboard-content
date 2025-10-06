@@ -79,7 +79,7 @@
       <div class="logo"></div>
       <div>
         <h1>TVD Content Report</h1>
-        <div class="small">แดชบอร์ดเชื่อม Google Sheet • กรองและวิเคราะห์แบบเรียลไทม์ • ส่งออก PDF</div>
+        <div class="small">แดชบอร์ดเชื่อม Google Sheet • กรองและวิเคราะห์แบบเรียลไทม์ • ส่งออก PDF • <span id="dataSrc">(ยังไม่เชื่อมต่อ)</span></div>
       </div>
     </header>
 
@@ -412,9 +412,55 @@
       }
     }
 
-    // ---------- Data Loader (Google Sheet placeholder) ----------
-    // TODO: แทนที่ seed ด้วยการ fetch() จาก Apps Script / AppSheet API
-    // ตัวอย่าง: fetch('YOUR_APP_SCRIPT_URL').then(r=>r.json()).then(data=>{ rows=data; buildFilters(); applyFilters(); })
+    // ---------- Data Loader (Google Sheet via Apps Script) ----------
+    // ตั้งค่า URL ของ Apps Script Web App ที่คืน JSON จากชีทของคุณ
+    const CONFIG = {
+      APP_URL: 'https://script.google.com/macros/s/AKfycbyY1VmjtZF0jrBNusPVdosb8kp3kdtvzt4Rme5uVXeHHp8LynaCZvbE0FNgOVgwnT26/exec'
+    };
+
+    async function loadFromSheet(){
+      if(!CONFIG.APP_URL){
+        document.getElementById('dataSrc').textContent = '(ยังไม่เชื่อมต่อ)';
+        return false;
+      }
+      try{
+        const res = await fetch(CONFIG.APP_URL, { method:'GET', mode:'cors' });
+        if(!res.ok) throw new Error('HTTP '+res.status);
+        const data = await res.json();
+        // รองรับได้ทั้งรูปแบบ Array (เดิม) หรือ Object { sheetName, rows }
+        let outRows = Array.isArray(data) ? data : (Array.isArray(data.rows) ? data.rows : []);
+        rows = outRows.map(r=>({ ...r }));
+        const srcName = !Array.isArray(data) && data.sheetName ? String(data.sheetName) : '';
+        document.getElementById('dataSrc').textContent = srcName ? `กำลังอ่านจาก: ${srcName}` : 'เชื่อมต่อแล้ว';
+        // rebuild dropdowns
+        els.plat.innerHTML='<option value="">ทุกแพลตฟอร์ม</option>';
+        els.designer.innerHTML='<option value="">ทุกดีไซเนอร์</option>';
+        buildFilters();
+        applyFilters();
+        return true;
+      }catch(err){
+        console.error('โหลดจากชีทไม่สำเร็จ:', err);
+        document.getElementById('dataSrc').textContent = '(เชื่อมต่อไม่สำเร็จ ใช้ข้อมูลตัวอย่าง)';
+        return false;
+      }
+    }
+      try{
+        const res = await fetch(CONFIG.APP_URL, { method:'GET', mode:'cors' });
+        if(!res.ok) throw new Error('HTTP '+res.status);
+        const data = await res.json();
+        // คาดหวัง header ภาษาไทยตามคอลัมน์ A–R (เริ่มอ่านตั้งแต่แถว 2)
+        rows = data.map(r=>({ ...r }));
+        // rebuild dropdowns
+        els.plat.innerHTML='<option value="">ทุกแพลตฟอร์ม</option>';
+        els.designer.innerHTML='<option value="">ทุกดีไซเนอร์</option>';
+        buildFilters();
+        applyFilters();
+        return true;
+      }catch(err){
+        console.error('โหลดจากชีทไม่สำเร็จ:', err);
+        return false;
+      }
+    }
 
     // ---------- Events ----------
     // Tabs switching
@@ -490,8 +536,14 @@
     });
 
     // ---------- Init ----------
-    buildFilters();
-    applyFilters();
+    (async ()=>{
+      const ok = await loadFromSheet();
+      if(!ok){
+        // fallback ใช้ seed เพื่อให้หน้าใช้งานได้
+        buildFilters();
+        applyFilters();
+      }
+    })();
   </script>
 </body>
 </html>
