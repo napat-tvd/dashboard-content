@@ -78,8 +78,8 @@
     <header>
       <div class="logo"></div>
       <div>
-        <h1>แดชบอร์ดงานออกแบบ</h1>
-        <div class="small">ตัวอย่าง HTML เดียวจบ • ค้นหา / กรอง / เรียง และคำนวณสถานะให้อัตโนมัติ</div>
+        <h1>TVD Content Report</h1>
+        <div class="small">แดชบอร์ดเชื่อม Google Sheet • กรองและวิเคราะห์แบบเรียลไทม์ • ส่งออก PDF</div>
       </div>
     </header>
 
@@ -111,7 +111,7 @@
           <button id="btnMonth" class="ghost">เดือนนี้</button>
         </div>
         <div class="group">
-          <button id="importCsv" class="ghost">นำเข้า CSV</button>
+          
           <button id="exportPdf">บันทึก PDF (หน้า Dashboard)</button>
           <button id="reset">รีเซ็ต</button>
         </div>
@@ -174,13 +174,14 @@
     </div>
 
       <div class="foot">
-        <div class="small">CSV header ที่รองรับ: จำนวนชิ้น,Platform,Product,Type,Project,Footage / Brief,Remark,Assignor,Date,MaxDate,Month,On-Going,Deadline,Designer,Finish,Master / AW,Status,Approved</div>
+        <div class="small">แหล่งข้อมูล: Google Sheet (เริ่มอ่านตั้งแต่แถว A2; แถว A1 เป็นคำอธิบาย)</div>
+      </div>
         <div class="small">เคล็ดลับ: ส่งออกจาก Google Sheets เป็น CSV แล้วกด “นำเข้า CSV” ได้เลย</div>
       </div>
     </section>
   </div>
 
-  <input id="file" type="file" accept=".csv" style="display:none" />
+  
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -232,15 +233,26 @@
 
     // ---------- Data (seed with your sample) ----------
     const seed = [
-      {
-        "จำนวนชิ้น":1, Platform:"FACEBOOK", Product:"SmartGuard เครื่องดักยุง", Type:"ออกแบบใหม่", Project:"SmartGenAir-Bar-ปกป้องคนรักด้วยอากาศสะอาด", "Footage / Brief":"20250929-SmartGenAir-Bar-ปกป้องคนรักด้วยอากาศสะอาด", Remark:"SideBar (vdo 9:16)", Assignor:"อาร์ม", Date:"29/ก.ย./25", MaxDate:"29/ก.ย./25", Month:"2025-กันยายน", "On-Going":"No", Deadline:"29/ก.ย./25", Designer:"ต้อง", Finish:"29/ก.ย./25", "Master / AW":"20250929-SmartGenAir-Bar-ปกป้องคนรักด้วยอากาศสะอาด", Status:"เสร็จแล้ว", Approved:true
-      },
-      {
-        "จำนวนชิ้น":1, Platform:"CHAT", Product:"อื่นๆ", Type:"ออกแบบใหม่", Project:"UltimateCollagen-Promotion500000mg", "Footage / Brief":"messageImage_1759119442379.jpg", Remark:"FB 1:1", Assignor:"อ้อย", Date:"29/ก.ย./25", MaxDate:"29/ก.ย./25", Month:"2025-กันยายน", "On-Going":"No", Deadline:"29/ก.ย./25", Designer:"เอ๊ะ", Finish:"29/ก.ย./25", "Master / AW":"29_09_2025 Ultimate Collagen", Status:"เสร็จแล้ว", Approved:true
-      },
-      {
-        "จำนวนชิ้น":1, Platform:"FACEBOOK", Product:"อื่นๆ", Type:"ออกแบบใหม่", Project:"สุขกายะ น้ำมันสมุนไพร", "Footage / Brief":"Brief Pro TV OCT 2025", Remark:"Ads Facebook : ตาม Pro TV", Assignor:"Etc.", Date:"30/ก.ย./25", MaxDate:"29/ก.ย./25", Month:"2025-กันยายน", "On-Going":"No", Deadline:"30/ก.ย./25", Designer:"เอ๊ะ", Finish:"29/ก.ย./25", "Master / AW":"ADs-TV-OCT2025", Status:"เสร็จแล้ว", Approved:true
-      }
+      {"จำนวนชิ้น":1, Platform:"FACEBOOK", Product:"SmartGuard เครื่องดักยุง", Type:"ออกแบบใหม่", Project:"SmartGenAir-Bar-ปกป้องคนรักด้วยอากาศสะอาด", "Footage / Brief":"20250929-SmartGenAir-Bar-ปกป้องคนรักด้วยอากาศสะอาด", Remark:"SideBar (vdo 9:16)", Assignor:"อาร์ม", Date:"29/ก.ย./25", MaxDate:"29/ก.ย./25", Month:"2025-กันยายน", "On-Going":"No", Deadline:"29/ก.ย./25", Designer:"ต้อง", Finish:"29/ก.ย./25", "Master / AW":"20250929-SmartGenAir-Bar-ปกป้องคนรักด้วยอากาศสะอาด", Status:"เสร็จแล้ว", Approved:true },
+      {"จำนวนชิ้น":1, Platform:"CHAT", Product:"อื่นๆ", Type:"ออกแบบใหม่", Project:"UltimateCollagen-Promotion500000mg", "Footage / Brief":"messageImage_1759119442379.jpg", Remark:"FB 1:1", Assignor:"อ้อย", Date:"29/ก.ย./25", MaxDate:"29/ก.ย./25", Month:"2025-กันยายน", "On-Going":"No", Deadline:"29/ก.ย./25", Designer:"เอ๊ะ", Finish:"29/ก.ย./25", "Master / AW":"29_09_2025 Ultimate Collagen", Status:"เสร็จแล้ว", Approved:true },
+      {"จำนวนชิ้น":1, Platform:"FACEBOOK", Product:"อื่นๆ", Type:"ออกแบบใหม่", Project:"สุขกายะ น้ำมันสมุนไพร", "Footage / Brief":"Brief Pro TV OCT 2025", Remark:"Ads Facebook : ตาม Pro TV", Assignor:"Etc.", Date:"30/ก.ย./25", MaxDate:"29/ก.ย./25", Month:"2025-กันยายน", "On-Going":"No", Deadline:"30/ก.ย./25", Designer:"เอ๊ะ", Finish:"29/ก.ย./25", "Master / AW":"ADs-TV-OCT2025", Status:"เสร็จแล้ว", Approved:true },
+      {"จำนวนชิ้น":1, Platform:"FACEBOOK", Product:"อื่นๆ", Type:"ออกแบบใหม่", Project:"สุขกายะ มอยเจอร์ไรซิ่ง เฮอเบิล ครีม", "Footage / Brief":"Brief Pro TV OCT 2025", Remark:"Ads Facebook : ตาม Pro TV", Assignor:"Etc.", Date:"30/ต.ค./25", MaxDate:"29/ต.ค./25", Month:"2025-ตุลาคม", "On-Going":"No", Deadline:"30/ต.ค./25", Designer:"ต้อง", Finish:"29/ต.ค./25", "Master / AW":"ADs-TV-OCT2025", Status:"เสร็จแล้ว", Approved:true },
+      {"จำนวนชิ้น":1, Platform:"FACEBOOK", Product:"Suklife น้ำมันอโวคาโด", Type:"ออกแบบใหม่", Project:"Suklife-Avocado", "Footage / Brief":"", Remark:"Bar ข้าง", Assignor:"เจ๋ง", Date:"29/ก.ย./25", MaxDate:"29/ก.ย./25", Month:"2025-กันยายน", "On-Going":"No", Deadline:"29/ก.ย./25", Designer:"เอ๊ะ", Finish:"29/ก.ย./25", "Master / AW":"29_09_2025 Suklife Bar ข้าง", Status:"เสร็จแล้ว", Approved:true },
+      {"จำนวนชิ้น":1, Platform:"FACEBOOK", Product:"BSRB", Type:"แก้ไขงาน", Project:"AD-BSRB-ProBar", "Footage / Brief":"", Remark:"Bar ข้าง", Assignor:"เจ๋ง", Date:"29/ก.ย./25", MaxDate:"29/ก.ย./25", Month:"2025-กันยายน", "On-Going":"No", Deadline:"29/ก.ย./25", Designer:"ต้อง", Finish:"29/ก.ย./25", "Master / AW":"AD-BSRB-ProBar", Status:"เสร็จแล้ว", Approved:true },
+      {"จำนวนชิ้น":2, Platform:"SHOPEE, LAZADA, TIKTOK", Product:"Sanshiro", Type:"Re Design", Project:"Feature-Sanshiro FT-010", "Footage / Brief":"", Remark:"Product Feature", Assignor:"ตู๋", Date:"2/ต.ค./25", MaxDate:"2/ต.ค./25", Month:"2025-ตุลาคม", "On-Going":"No", Deadline:"2/ต.ค./25", Designer:"ต้อง", Finish:"2/ต.ค./25", "Master / AW":"feature-Sanshiro FT-010", Status:"เสร็จแล้ว", Approved:true },
+      {"จำนวนชิ้น":2, Platform:"FACEBOOK", Product:"Suklife น้ำมันอโวคาโด", Type:"ออกแบบใหม่", Project:"Suklife-FB-รวมพลัง", "Footage / Brief":"", Remark:"FB 1:1", Assignor:"เจ๋ง", Date:"1/ต.ค./25", MaxDate:"1/ต.ค./25", Month:"2025-ตุลาคม", "On-Going":"No", Deadline:"1/ต.ค./25", Designer:"ต้อง", Finish:"1/ต.ค./25", "Master / AW":"20251001-Post-Suklife-FBAlbum-รวมพลัง", Status:"เสร็จแล้ว", Approved:true },
+      {"จำนวนชิ้น":2, Platform:"FACEBOOK", Product:"เพรียวลม", Type:"ออกแบบใหม่", Project:"Ads-BAR-เพรียวลม-ซึมไว", "Footage / Brief":"", Remark:"Bar ข้าง A-B", Assignor:"เจ๋ง", Date:"3/ต.ค./25", MaxDate:"3/ต.ค./25", Month:"2025-ตุลาคม", "On-Going":"No", Deadline:"3/ต.ค./25", Designer:"ต้อง", Finish:"3/ต.ค./25", "Master / AW":"Ads-BAR-เพรียวลม-ซึมไว", Status:"เสร็จแล้ว", Approved:true },
+      {"จำนวนชิ้น":1, Platform:"TIKTOK", Product:"อื่นๆ", Type:"Motion Graphic", Project:"01_10_2025 Motion Tiktok 10.10", "Footage / Brief":"", Remark:"Motion สำหรับ Live", Assignor:"Etc.", Date:"10/ต.ค./25", MaxDate:"2/ต.ค./25", Month:"2025-ตุลาคม", "On-Going":"No", Deadline:"10/ต.ค./25", Designer:"เอ๊ะ", Finish:"2/ต.ค./25", "Master / AW":"01_10_2025 Motion Tiktok Topbar", Status:"เสร็จแล้ว", Approved:true },
+      {"จำนวนชิ้น":1, Platform:"TIKTOK", Product:"อื่นๆ", Type:"Motion Graphic", Project:"01_10_2025 Motion Tiktok Halloween", "Footage / Brief":"", Remark:"Motion สำหรับ Live", Assignor:"Etc.", Date:"10/ต.ค./25", MaxDate:"2/ต.ค./25", Month:"2025-ตุลาคม", "On-Going":"No", Deadline:"10/ต.ค./25", Designer:"เอ๊ะ", Finish:"2/ต.ค./25", "Master / AW":"01_10_2025 Motion Tiktok Topbar", Status:"เสร็จแล้ว", Approved:true },
+      {"จำนวนชิ้น":1, Platform:"FACEBOOK", Product:"BSRB", Type:"ตัดคลิป Social", Project:"02102025_BSRB_FC", "Footage / Brief":"", Remark:"FB 1:1", Assignor:"เจ๋ง", Date:"2/ต.ค./25", MaxDate:"2/ต.ค./25", Month:"2025-ตุลาคม", "On-Going":"No", Deadline:"2/ต.ค./25", Designer:"กัน", Finish:"2/ต.ค./25", "Master / AW":"G_02102025_BSRB_FC.mov", Status:"เสร็จแล้ว", Approved:true },
+      {"จำนวนชิ้น":6, Platform:"SHOPEE, LAZADA, TIKTOK", Product:"Sanshiro", Type:"ออกแบบใหม่", Project:"02_10_2025 Feature-Sanshiro FT009", "Footage / Brief":"", Remark:"", Assignor:"Etc.", Date:"3/ต.ค./25", MaxDate:"3/ต.ค./25", Month:"2025-ตุลาคม", "On-Going":"No", Deadline:"3/ต.ค./25", Designer:"เอ๊ะ", Finish:"3/ต.ค./25", "Master / AW":"02_10_2025 Feature-Sanshiro FT009", Status:"เสร็จแล้ว", Approved:true },
+      {"จำนวนชิ้น":1, Platform:"FACEBOOK", Product:"แองจี้ ยาถ่าย", Type:"ออกแบบใหม่", Project:"02_10_2025 Angie Bar ข้าง", "Footage / Brief":"", Remark:"", Assignor:"เจ๋ง", Date:"3/ต.ค./25", MaxDate:"3/ต.ค./25", Month:"2025-ตุลาคม", "On-Going":"No", Deadline:"3/ต.ค./25", Designer:"เอ๊ะ", Finish:"3/ต.ค./25", "Master / AW":"02_10_2025 Angie Bar ข้าง", Status:"เสร็จแล้ว", Approved:true },
+      {"จำนวนชิ้น":1, Platform:"FACEBOOK", Product:"Sanshiro", Type:"จองคิวถ่ายงาน", Project:"Sanshiro Script Ads FB_01", "Footage / Brief":"script plan facebook", Remark:"หน้า 1", Assignor:"เจ๋ง", Date:"1/ต.ค./25", MaxDate:"1/ต.ค./25", Month:"2025-ตุลาคม", "On-Going":"Yes", Deadline:"1/ต.ค./25", Designer:"", Finish:"", "Master / AW":"", Status:"เลยกำหนด", Approved:false },
+      {"จำนวนชิ้น":1, Platform:"FACEBOOK", Product:"Suklife น้ำมันอโวคาโด", Type:"ตัดคลิป Social", Project:"G_02102025_Suklife_แบบเจ๋งๆ", "Footage / Brief":"", Remark:"FB 1:1", Assignor:"เจ๋ง", Date:"2/ต.ค./25", MaxDate:"2/ต.ค./25", Month:"2025-ตุลาคม", "On-Going":"No", Deadline:"2/ต.ค./25", Designer:"กัน", Finish:"2/ต.ค./25", "Master / AW":"G_02102025_Suklife_แบบเจ๋งๆ.mov", Status:"เสร็จแล้ว", Approved:true },
+      {"จำนวนชิ้น":1, Platform:"FACEBOOK", Product:"เพรียวลม", Type:"จองคิวถ่ายงาน", Project:"เพรียวลม Script Ads FB_01", "Footage / Brief":"script plan facebook", Remark:"หน้า 1", Assignor:"เจ๋ง", Date:"1/ต.ค./25", MaxDate:"1/ต.ค./25", Month:"2025-ตุลาคม", "On-Going":"Yes", Deadline:"1/ต.ค./25", Designer:"", Finish:"", "Master / AW":"", Status:"เลยกำหนด", Approved:false },
+      {"จำนวนชิ้น":1, Platform:"FACEBOOK", Product:"SmartGuard เครื่องดักยุง", Type:"จองคิวถ่ายงาน", Project:"SmartGuard Script Ads FB_01", "Footage / Brief":"script plan facebook", Remark:"หน้า 1", Assignor:"เจ๋ง", Date:"1/ต.ค./25", MaxDate:"1/ต.ค./25", Month:"2025-ตุลาคม", "On-Going":"Yes", Deadline:"1/ต.ค./25", Designer:"", Finish:"", "Master / AW":"", Status:"เลยกำหนด", Approved:false },
+      {"จำนวนชิ้น":1, Platform:"FACEBOOK", Product:"เพรียวลม", Type:"ตัดคลิป Social", Project:"G_03102025_เพรียวลม_FC", "Footage / Brief":"", Remark:"FB 1:1", Assignor:"เจ๋ง", Date:"3/ต.ค./25", MaxDate:"3/ต.ค./25", Month:"2025-ตุลาคม", "On-Going":"No", Deadline:"3/ต.ค./25", Designer:"กัน", Finish:"3/ต.ค./25", "Master / AW":"G_03102025_เพรียวลม_FC.mp4", Status:"เสร็จแล้ว", Approved:true },
+      {"จำนวนชิ้น":1, Platform:"FACEBOOK", Product:"SmartGuard เครื่องดักยุง", Type:"ตัดคลิป Social", Project:"G_03102025_SmartGuard_FC", "Footage / Brief":"", Remark:"FB 1:1", Assignor:"เจ๋ง", Date:"3/ต.ค./25", MaxDate:"3/ต.ค./25", Month:"2025-ตุลาคม", "On-Going":"No", Deadline:"3/ต.ค./25", Designer:"กัน", Finish:"3/ต.ค./25", "Master / AW":"G_03102025_SmartGuard_FC.mov", Status:"เสร็จแล้ว", Approved:true }
     ];
 
     let rows = seed.map(r => ({...r}));
@@ -255,7 +267,7 @@
       kTotal: document.getElementById('kTotal'), kDone: document.getElementById('kDone'), kOngo: document.getElementById('kOngo'), kOver: document.getElementById('kOver'),
       kArt: document.getElementById('kArt'), kVid: document.getElementById('kVid'), kMot: document.getElementById('kMot'), kScr: document.getElementById('kScr'),
       tbody: document.querySelector('#tbl tbody'),
-      import: document.getElementById('importCsv'), file: document.getElementById('file'), reset: document.getElementById('reset')
+      reset: document.getElementById('reset')
     };
 
     function uniqueVals(arr, key){
@@ -400,52 +412,9 @@
       }
     }
 
-    // ---------- CSV Import ----------
-    function parseCSV(txt){
-      // Simple CSV parser (commas, quotes). Good enough for exported sheets.
-      const rows=[]; let i=0, cur='', cell=[], inQ=false; 
-      const pushCell=()=>{cell.push(cur);cur=''}; const pushRow=()=>{rows.push(cell);cell=[]};
-      while(i<txt.length){
-        const ch = txt[i];
-        if(inQ){
-          if(ch==='"' && txt[i+1]==='"'){cur+='"'; i+=2; continue}
-          if(ch==='"'){inQ=false; i++; continue}
-          cur+=ch; i++; continue;
-        } else {
-          if(ch==='"'){inQ=true; i++; continue}
-          if(ch===','){pushCell(); i++; continue}
-          if(ch==='\n'){pushCell(); pushRow(); i++; continue}
-          if(ch==='\r'){i++; continue}
-          cur+=ch; i++;
-        }
-      }
-      if(cur.length>0 || cell.length>0){pushCell(); pushRow()}
-      return rows;
-    }
-
-    function rowsFromCSV(csvText){
-      const grid = parseCSV(csvText);
-      if(!grid.length) return [];
-      const header = grid[0].map(s=>s.trim());
-      const idx = key => header.findIndex(h=>h.toLowerCase()===key.toLowerCase());
-      const mapRow = r => {
-        const o={};
-        header.forEach((h,j)=> o[h] = r[j] ?? '');
-        // Normalize important columns to expected property keys
-        const rename = {
-          'จำนวนชิ้น':'จำนวนชิ้น','Platform':'Platform','Product':'Product','Type':'Type','Project':'Project','Footage / Brief':'Footage / Brief','Remark':'Remark','Assignor':'Assignor','Date':'Date','MaxDate':'MaxDate','Month':'Month','On-Going':'On-Going','Deadline':'Deadline','Designer':'Designer','Finish':'Finish','Master / AW':'Master / AW','Status':'Status','Approved':'Approved'
-        };
-        const norm={};
-        for(const [k,v] of Object.entries(rename)) norm[k] = o[k] ?? o[k] ?? '';
-        // Coerce Approved
-        if(typeof norm.Approved === 'string'){
-          const t = norm.Approved.trim().toLowerCase();
-          if(['true','false'].includes(t)) norm.Approved = (t==='true');
-        }
-        return norm;
-      }
-      return grid.slice(1).filter(r=>r.some(c=>String(c).trim()!=='')).map(mapRow);
-    }
+    // ---------- Data Loader (Google Sheet placeholder) ----------
+    // TODO: แทนที่ seed ด้วยการ fetch() จาก Apps Script / AppSheet API
+    // ตัวอย่าง: fetch('YOUR_APP_SCRIPT_URL').then(r=>r.json()).then(data=>{ rows=data; buildFilters(); applyFilters(); })
 
     // ---------- Events ----------
     // Tabs switching
@@ -516,7 +485,8 @@
 
     els.reset.addEventListener('click', ()=>{
       els.q.value=''; els.plat.value=''; els.designer.value=''; els.status.value=''; els.category.value='';
-      els.dateFrom.value=''; els.dateTo.value=''; sortKey='row'; sortDir=1; applyFilters();
+      els.dateSource.value='Deadline'; els.dateFrom.value=''; els.dateTo.value=''; sortKey='row'; sortDir=1; applyFilters();
+    });
     });
 
     // ---------- Init ----------
