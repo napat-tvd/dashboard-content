@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Marketing Tasks Dashboard</title>
+  <style>
+    :root{
+      --bg:#0b1020;--panel:#121b36;--muted:#a9b0c7;--text:#f5f7ff;--brand:#6ea8fe;--accent:#64d2ff;--ok:#3ddc97;--warn:#ffcc00;--danger:#ff6b6b;
+      --chip:#1d2a52;--chip-br:#2a3a6b;--shadow:0 10px 30px rgba(0,0,0,.35);
+      --radius:18px
+    }
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(1200px 800px at 20% -20%,#1a2454 0%, rgba(26,36,84,0) 60%),
+      radial-gradient(1000px 800px at 110% 0%, #0d1539 0%, rgba(13,21,57,0) 50%), var(--bg);color:var(--text);font:14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, 'Noto Sans Thai', sans-serif}
+    .wrap{max-width:1200px;margin:32px auto;padding:0 20px}
+    header{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+    .logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--brand),var(--accent));box-shadow:var(--shadow)}
+    h1{font-size:24px;margin:0}
+    .panel{background:linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.03));backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);box-shadow:var(--shadow)}
+
+    /* Controls */
+    .controls{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr auto;gap:10px;padding:14px}
+    .controls .group{display:flex;gap:10px}
+    input[type="search"], select, button, .chip{appearance:none;background:#0f1731;border:1px solid #253161;color:var(--text);padding:10px 12px;border-radius:12px;outline:none}
+    input[type="search"]{width:100%}
+    select{width:100%}
+    button{cursor:pointer;transition:.2s transform}
+    button:hover{transform:translateY(-1px)}
+    .ghost{background:transparent;border-color:#2d3a74}
+
+    /* KPI cards */
+    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:14px}
+    .kpi{padding:16px;border-radius:16px;background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08)}
+    .kpi h3{margin:0 0 6px;font-size:13px;color:var(--muted);font-weight:600}
+    .kpi .num{font-size:28px;font-weight:800}
+
+    /* Table */
+    .table-wrap{margin-top:14px}
+    table{width:100%;border-collapse:separate;border-spacing:0;min-width:960px}
+    thead th{position:sticky;top:0;background:#0e162f;z-index:2}
+    th,td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.06);text-align:left}
+    tbody tr:hover{background:rgba(255,255,255,.03)}
+    th{font-size:12px;color:#9fb1ff;text-transform:uppercase;letter-spacing:.06em;cursor:pointer}
+
+    /* Chips */
+    .status{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;border:1px solid var(--chip-br);background:var(--chip);font-weight:600}
+    .status.done{color:#b1ffd9;border-color:rgba(61,220,151,.3)}
+    .status.ongo{color:#cfe3ff}
+    .status.over{color:#ffe2b2;border-color:rgba(255,204,0,.35)}
+    .status.none{color:#ffd0d0;border-color:rgba(255,107,107,.35)}
+
+    .platform{padding:4px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);font-size:12px}
+
+    /* Footer */
+    .foot{display:flex;gap:10px;flex-wrap:wrap;padding:14px}
+    .small{color:var(--muted);font-size:12px}
+    .link{color:#cde1ff;text-decoration:underline;cursor:pointer}
+
+    /* Responsive */
+    @media (max-width:900px){
+      .controls{grid-template-columns:1fr;}
+      .kpis{grid-template-columns:repeat(2,1fr)}
+      table{min-width:720px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo"></div>
+      <div>
+        <h1>แดชบอร์ดงานออกแบบ</h1>
+        <div class="small">ตัวอย่าง HTML เดียวจบ • ค้นหา / กรอง / เรียง และคำนวณสถานะให้อัตโนมัติ</div>
+      </div>
+    </header>
+
+    <section class="panel">
+      <div class="controls">
+        <input id="q" type="search" placeholder="ค้นหา Project / Product / Remark / Master…" />
+        <select id="plat"><option value="">ทุกแพลตฟอร์ม</option></select>
+        <select id="designer"><option value="">ทุกดีไซเนอร์</option></select>
+        <select id="status"><option value="">ทุกสถานะ</option><option value="เสร็จแล้ว">เสร็จแล้ว</option><option value="อยู่ในกำหนด">อยู่ในกำหนด</option><option value="เลยกำหนด">เลยกำหนด</option><option value="ยังไม่ได้กำหนด">ยังไม่ได้กำหนด</option></select>
+        <div class="group">
+          <button id="importCsv" class="ghost">นำเข้า CSV</button>
+          <button id="reset">รีเซ็ต</button>
+        </div>
+      </div>
+      <div class="kpis">
+        <div class="kpi"><h3>งานทั้งหมด</h3><div id="kTotal" class="num">0</div></div>
+        <div class="kpi"><h3>เสร็จแล้ว</h3><div id="kDone" class="num">0</div></div>
+        <div class="kpi"><h3>อยู่ในกำหนด</h3><div id="kOngo" class="num">0</div></div>
+        <div class="kpi"><h3>เลยกำหนด</h3><div id="kOver" class="num">0</div></div>
+        <div class="kpi"><h3>งาน Artwork</h3><div id="kArt" class="num">0</div></div>
+        <div class="kpi"><h3>งาน Video</h3><div id="kVid" class="num">0</div></div>
+        <div class="kpi"><h3>งาน Motion</h3><div id="kMot" class="num">0</div></div>
+        <div class="kpi"><h3>Script ออกกอง</h3><div id="kScr" class="num">0</div></div>
+      </div>
+
+      <div class="table-wrap">
+        <div style="overflow:auto;border-radius:0 0 var(--radius) var(--radius);border-top:1px solid rgba(255,255,255,.06)">
+          <table id="tbl">
+            <thead>
+              <tr>
+                <th data-key="row">#</th>
+                <th data-key="Platform">Platform</th>
+                <th data-key="Product">Product</th>
+                <th data-key="Type">Type</th>
+                <th data-key="Project">Project</th>
+                <th data-key="Remark">Remark</th>
+                <th data-key="Assignor">Assignor</th>
+                <th data-key="Date">Date</th>
+                <th data-key="MaxDate">MaxDate</th>
+                <th data-key="Month">Month</th>
+                <th data-key="Deadline">Deadline</th>
+                <th data-key="Designer">Designer</th>
+                <th data-key="Finish">Finish</th>
+                <th data-key="Status">Status</th>
+                <th data-key="Approved">Approved</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="foot">
+        <div class="small">CSV header ที่รองรับ: จำนวนชิ้น,Platform,Product,Type,Project,Footage / Brief,Remark,Assignor,Date,MaxDate,Month,On-Going,Deadline,Designer,Finish,Master / AW,Status,Approved</div>
+        <div class="small">เคล็ดลับ: ส่งออกจาก Google Sheets เป็น CSV แล้วกด “นำเข้า CSV” ได้เลย</div>
+      </div>
+    </section>
+  </div>
+
+  <input id="file" type="file" accept=".csv" style="display:none" />
+
+  <script>
+    // ---------- Utilities ----------
+    const TH_MONTHS = {"ม.ค.":1,"ก.พ.":2,"มี.ค.":3,"เม.ย.":4,"พ.ค.":5,"มิ.ย.":6,"ก.ค.":7,"ส.ค.":8,"ก.ย.":9,"ต.ค.":10,"พ.ย.":11,"ธ.ค.":12};
+    function pad(n){return n<10?"0"+n:n}
+    function parseThaiDate(s){
+      if(!s) return null;
+      s = String(s).trim();
+      // Accept ISO like 2025-09-29
+      if(/^\d{4}-\d{2}-\d{2}$/.test(s)) return new Date(s+"T00:00:00");
+      // Accept 29/ก.ย./25 or 29/ก.ย./2025 (spaces tolerated)
+      const m = s.match(/(\d{1,2})\s*\/\s*([ก-๙\.]+)\s*\/\s*(\d{2,4})/);
+      if(m){
+        const d = +m[1];
+        const monTxt = m[2].replace(/\./g, ".");
+        const yRaw = +m[3];
+        const y = yRaw < 100 ? 2000 + yRaw : yRaw; // assume 20xx
+        const mon = TH_MONTHS[monTxt];
+        if(!mon) return null;
+        return new Date(`${y}-${pad(mon)}-${pad(d)}T00:00:00`);
+      }
+      return null;
+    }
+    function fmtDate(d){if(!d) return ""; return d.toLocaleDateString('th-TH', { year:'numeric', month:'short', day:'2-digit'})}
+
+    function computeStatus(row){
+      // Approved TRUE -> เสร็จแล้ว
+      if(String(row.Approved).toLowerCase()==='true') return 'เสร็จแล้ว';
+      // Finish not empty -> เสร็จแล้ว
+      if(row.Finish && String(row.Finish).trim() !== '') return 'เสร็จแล้ว';
+      const deadline = parseThaiDate(row.Deadline);
+      if(deadline){
+        const today = new Date(); today.setHours(0,0,0,0);
+        if(deadline < today) return 'เลยกำหนด';
+        return 'อยู่ในกำหนด';
+      }
+      return 'ยังไม่ได้กำหนด';
+    }
+
+    function statusClass(s){
+      if(s==='เสร็จแล้ว') return 'done';
+      if(s==='อยู่ในกำหนด') return 'ongo';
+      if(s==='เลยกำหนด') return 'over';
+      return 'none';
+    }
+
+    // ---------- Data (seed with your sample) ----------
+    const seed = [
+      {
+        "จำนวนชิ้น":1, Platform:"FACEBOOK", Product:"SmartGuard เครื่องดักยุง", Type:"ออกแบบใหม่", Project:"SmartGenAir-Bar-ปกป้องคนรักด้วยอากาศสะอาด", "Footage / Brief":"20250929-SmartGenAir-Bar-ปกป้องคนรักด้วยอากาศสะอาด", Remark:"SideBar (vdo 9:16)", Assignor:"อาร์ม", Date:"29/ก.ย./25", MaxDate:"29/ก.ย./25", Month:"2025-กันยายน", "On-Going":"No", Deadline:"29/ก.ย./25", Designer:"ต้อง", Finish:"29/ก.ย./25", "Master / AW":"20250929-SmartGenAir-Bar-ปกป้องคนรักด้วยอากาศสะอาด", Status:"เสร็จแล้ว", Approved:true
+      },
+      {
+        "จำนวนชิ้น":1, Platform:"CHAT", Product:"อื่นๆ", Type:"ออกแบบใหม่", Project:"UltimateCollagen-Promotion500000mg", "Footage / Brief":"messageImage_1759119442379.jpg", Remark:"FB 1:1", Assignor:"อ้อย", Date:"29/ก.ย./25", MaxDate:"29/ก.ย./25", Month:"2025-กันยายน", "On-Going":"No", Deadline:"29/ก.ย./25", Designer:"เอ๊ะ", Finish:"29/ก.ย./25", "Master / AW":"29_09_2025 Ultimate Collagen", Status:"เสร็จแล้ว", Approved:true
+      },
+      {
+        "จำนวนชิ้น":1, Platform:"FACEBOOK", Product:"อื่นๆ", Type:"ออกแบบใหม่", Project:"สุขกายะ น้ำมันสมุนไพร", "Footage / Brief":"Brief Pro TV OCT 2025", Remark:"Ads Facebook : ตาม Pro TV", Assignor:"Etc.", Date:"30/ก.ย./25", MaxDate:"29/ก.ย./25", Month:"2025-กันยายน", "On-Going":"No", Deadline:"30/ก.ย./25", Designer:"เอ๊ะ", Finish:"29/ก.ย./25", "Master / AW":"ADs-TV-OCT2025", Status:"เสร็จแล้ว", Approved:true
+      }
+    ];
+
+    let rows = seed.map(r => ({...r}));
+    let sortKey = 'row', sortDir = 1; // 1 asc, -1 desc
+
+    // ---------- Rendering ----------
+    const els = {
+      q: document.getElementById('q'), plat: document.getElementById('plat'), designer: document.getElementById('designer'), status: document.getElementById('status'),
+      kTotal: document.getElementById('kTotal'), kDone: document.getElementById('kDone'), kOngo: document.getElementById('kOngo'), kOver: document.getElementById('kOver'),
+      kArt: document.getElementById('kArt'), kVid: document.getElementById('kVid'), kMot: document.getElementById('kMot'), kScr: document.getElementById('kScr'),
+      tbody: document.querySelector('#tbl tbody'),
+      import: document.getElementById('importCsv'), file: document.getElementById('file'), reset: document.getElementById('reset')
+    };
+
+    function uniqueVals(arr, key){
+      return [...new Set(arr.map(x => (x[key]??'').toString().trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'th'))
+    }
+
+    function buildFilters(){
+      // Platform
+      for(const v of uniqueVals(rows,'Platform')){
+        const o=document.createElement('option'); o.value=v; o.textContent=v; els.plat.appendChild(o)
+      }
+      for(const v of uniqueVals(rows,'Designer')){
+        const o=document.createElement('option'); o.value=v; o.textContent=v; els.designer.appendChild(o)
+      }
+    }
+
+    function applyFilters(){
+      const q = els.q.value.trim().toLowerCase();
+      const pf = els.plat.value; const ds = els.designer.value; const st = els.status.value;
+      const filtered = rows.filter(r => {
+        const s = computeStatus(r);
+        const matchQ = !q || [r.Project,r.Product,r.Remark,r['Master / AW'],r.Type,r.Platform,r.Designer].some(x => (x||'').toString().toLowerCase().includes(q));
+        const matchPlat = !pf || r.Platform === pf;
+        const matchDes = !ds || r.Designer === ds;
+        const matchSt = !st || s === st;
+        return matchQ && matchPlat && matchDes && matchSt;
+      });
+      updateKPIs(filtered);
+      renderTable(filtered);
+    }
+
+    function updateKPIs(list){
+      els.kTotal.textContent = list.length;
+      els.kDone.textContent = list.filter(r=>computeStatus(r)==='เสร็จแล้ว').length;
+      els.kOngo.textContent = list.filter(r=>computeStatus(r)==='อยู่ในกำหนด').length;
+      els.kOver.textContent = list.filter(r=>computeStatus(r)==='เลยกำหนด').length;
+
+      const t = s => (s||'').toString().toLowerCase();
+      els.kArt.textContent = list.filter(r=> t(r.Type).includes('ออกแบบใหม่')).length;
+      els.kVid.textContent = list.filter(r=> t(r.Type).includes('ตัดคลิปโซเชียล')).length;
+      els.kMot.textContent = list.filter(r=> t(r.Type).includes('motion graphic')).length;
+      els.kScr.textContent = list.filter(r=> t(r.Type).includes('จองคิวถ่ายงาน')).length;
+    }
+
+    function compare(a,b,key){
+      const va = key==='Deadline' || key==='Date' || key==='MaxDate' ? parseThaiDate(a[key]) : (a[key]??'').toString().toLowerCase();
+      const vb = key==='Deadline' || key==='Date' || key==='MaxDate' ? parseThaiDate(b[key]) : (b[key]??'').toString().toLowerCase();
+      if(va==null && vb==null) return 0; if(va==null) return -1; if(vb==null) return 1;
+      if(va>vb) return 1; if(va<vb) return -1; return 0;
+    }
+
+    function renderTable(list){
+      const tbody = els.tbody; tbody.innerHTML='';
+      // sort
+      const arr = list.map((r,i)=>({...r,_row:i+1})).sort((a,b)=>{
+        if(sortKey==='row') return sortDir*(a._row-b._row);
+        return sortDir*compare(a,b,sortKey);
+      });
+
+      for(const r of arr){
+        const s = computeStatus(r);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${r._row}</td>
+          <td><span class="platform">${r.Platform||''}</span></td>
+          <td>${r.Product||''}</td>
+          <td>${r.Type||''}</td>
+          <td title="${r.Project||''}">${r.Project||''}</td>
+          <td>${r.Remark||''}</td>
+          <td>${r.Assignor||''}</td>
+          <td>${r.Date||''}</td>
+          <td>${r.MaxDate||''}</td>
+          <td>${r.Month||''}</td>
+          <td>${r.Deadline||''}</td>
+          <td>${r.Designer||''}</td>
+          <td>${r.Finish||''}</td>
+          <td><span class="status ${statusClass(s)}">${s}</span></td>
+          <td>${String(r.Approved)==='true' || r.Approved===true ? 'TRUE' : (String(r.Approved)==='false' ? 'FALSE' : (r.Approved||''))}</td>
+        `;
+        tbody.appendChild(tr);
+      }
+    }
+
+    // ---------- CSV Import ----------
+    function parseCSV(txt){
+      // Simple CSV parser (commas, quotes). Good enough for exported sheets.
+      const rows=[]; let i=0, cur='', cell=[], inQ=false; 
+      const pushCell=()=>{cell.push(cur);cur=''}; const pushRow=()=>{rows.push(cell);cell=[]};
+      while(i<txt.length){
+        const ch = txt[i];
+        if(inQ){
+          if(ch==='"' && txt[i+1]==='"'){cur+='"'; i+=2; continue}
+          if(ch==='"'){inQ=false; i++; continue}
+          cur+=ch; i++; continue;
+        } else {
+          if(ch==='"'){inQ=true; i++; continue}
+          if(ch===','){pushCell(); i++; continue}
+          if(ch==='\n'){pushCell(); pushRow(); i++; continue}
+          if(ch==='\r'){i++; continue}
+          cur+=ch; i++;
+        }
+      }
+      if(cur.length>0 || cell.length>0){pushCell(); pushRow()}
+      return rows;
+    }
+
+    function rowsFromCSV(csvText){
+      const grid = parseCSV(csvText);
+      if(!grid.length) return [];
+      const header = grid[0].map(s=>s.trim());
+      const idx = key => header.findIndex(h=>h.toLowerCase()===key.toLowerCase());
+      const mapRow = r => {
+        const o={};
+        header.forEach((h,j)=> o[h] = r[j] ?? '');
+        // Normalize important columns to expected property keys
+        const rename = {
+          'จำนวนชิ้น':'จำนวนชิ้น','Platform':'Platform','Product':'Product','Type':'Type','Project':'Project','Footage / Brief':'Footage / Brief','Remark':'Remark','Assignor':'Assignor','Date':'Date','MaxDate':'MaxDate','Month':'Month','On-Going':'On-Going','Deadline':'Deadline','Designer':'Designer','Finish':'Finish','Master / AW':'Master / AW','Status':'Status','Approved':'Approved'
+        };
+        const norm={};
+        for(const [k,v] of Object.entries(rename)) norm[k] = o[k] ?? o[k] ?? '';
+        // Coerce Approved
+        if(typeof norm.Approved === 'string'){
+          const t = norm.Approved.trim().toLowerCase();
+          if(['true','false'].includes(t)) norm.Approved = (t==='true');
+        }
+        return norm;
+      }
+      return grid.slice(1).filter(r=>r.some(c=>String(c).trim()!=='')).map(mapRow);
+    }
+
+    // ---------- Events ----------
+    document.querySelectorAll('#tbl thead th').forEach(th=>{
+      th.addEventListener('click', ()=>{
+        const key = th.getAttribute('data-key');
+        if(!key) return; if(sortKey===key) sortDir*=-1; else {sortKey=key; sortDir=1}
+        applyFilters();
+      })
+    })
+
+    els.q.addEventListener('input', applyFilters);
+    els.plat.addEventListener('change', applyFilters);
+    els.designer.addEventListener('change', applyFilters);
+    els.status.addEventListener('change', applyFilters);
+
+    els.import.addEventListener('click', ()=> els.file.click());
+    els.file.addEventListener('change', e=>{
+      const f = e.target.files[0]; if(!f) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try{ rows = rowsFromCSV(reader.result); }catch(err){ alert('อ่านไฟล์ไม่สำเร็จ: '+ err.message); }
+        // rebuild dropdowns
+        els.plat.innerHTML='<option value="">ทุกแพลตฟอร์ม</option>';
+        els.designer.innerHTML='<option value="">ทุกดีไซเนอร์</option>';
+        buildFilters();
+        applyFilters();
+      };
+      reader.readAsText(f);
+      e.target.value = '';
+    });
+
+    els.reset.addEventListener('click', ()=>{
+      els.q.value=''; els.plat.value=''; els.designer.value=''; els.status.value=''; sortKey='row'; sortDir=1; applyFilters();
+    });
+
+    // ---------- Init ----------
+    buildFilters();
+    applyFilters();
+  </script>
+</body>
+</html>
