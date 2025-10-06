@@ -19,7 +19,9 @@
     .panel{background:linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.03));backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);box-shadow:var(--shadow)}
 
     /* Controls */
-    .controls{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr 1fr 1fr auto;gap:10px;padding:14px}
+    .controls{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr 1fr 1fr 1fr auto auto;gap:10px;padding:14px}
+    .controls .btns{display:flex;gap:8px;flex-wrap:wrap}
+    .controls .btns button{white-space:nowrap}
     .controls .group{display:flex;gap:10px}
     input[type="search"], select, button, .chip{appearance:none;background:#0f1731;border:1px solid #253161;color:var(--text);padding:10px 12px;border-radius:12px;outline:none}
     input[type="search"]{width:100%}
@@ -94,10 +96,26 @@
           <option value="motion">Motion (Motion Graphic)</option>
           <option value="script">Script ออกกอง (จองคิวถ่ายงาน)</option>
         </select>
+        <select id="dateSource" title="เลือกฟิลด์วันที่ที่จะใช้กรอง">
+          <option value="Deadline">อิงวันที่: Deadline</option>
+          <option value="Date">อิงวันที่: Date</option>
+          <option value="MaxDate">อิงวันที่: MaxDate</option>
+        </select>
         <div class="group">
-          <input id="dateFrom" type="date" title="ตั้งแต่วันที่ (อิง Deadline)" />
-          <input id="dateTo" type="date" title="ถึงวันที่ (อิง Deadline)" />
+          <input id="dateFrom" type="date" title="ตั้งแต่วันที่" />
+          <input id="dateTo" type="date" title="ถึงวันที่" />
         </div>
+        <div class="btns">
+          <button id="btn7" class="ghost">7 วันล่าสุด</button>
+          <button id="btn30" class="ghost">30 วันล่าสุด</button>
+          <button id="btnMonth" class="ghost">เดือนนี้</button>
+        </div>
+        <div class="group">
+          <button id="importCsv" class="ghost">นำเข้า CSV</button>
+          <button id="exportPdf">บันทึก PDF (หน้า Dashboard)</button>
+          <button id="reset">รีเซ็ต</button>
+        </div>
+      </div>
         <div class="group">
           <button id="importCsv" class="ghost">นำเข้า CSV</button>
           <button id="reset">รีเซ็ต</button>
@@ -165,6 +183,8 @@
   <input id="file" type="file" accept=".csv" style="display:none" />
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <script>
     // ---------- Utilities ----------
     const TH_MONTHS = {"ม.ค.":1,"ก.พ.":2,"มี.ค.":3,"เม.ย.":4,"พ.ค.":5,"มิ.ย.":6,"ก.ค.":7,"ส.ค.":8,"ก.ย.":9,"ต.ค.":10,"พ.ย.":11,"ธ.ค.":12};
@@ -230,7 +250,8 @@
     // ---------- Rendering ----------
     const els = {
       q: document.getElementById('q'), plat: document.getElementById('plat'), designer: document.getElementById('designer'), status: document.getElementById('status'), category: document.getElementById('category'),
-      dateFrom: document.getElementById('dateFrom'), dateTo: document.getElementById('dateTo'),
+      dateSource: document.getElementById('dateSource'), dateFrom: document.getElementById('dateFrom'), dateTo: document.getElementById('dateTo'),
+      btn7: document.getElementById('btn7'), btn30: document.getElementById('btn30'), btnMonth: document.getElementById('btnMonth'), exportPdf: document.getElementById('exportPdf'),
       kTotal: document.getElementById('kTotal'), kDone: document.getElementById('kDone'), kOngo: document.getElementById('kOngo'), kOver: document.getElementById('kOver'),
       kArt: document.getElementById('kArt'), kVid: document.getElementById('kVid'), kMot: document.getElementById('kMot'), kScr: document.getElementById('kScr'),
       tbody: document.querySelector('#tbl tbody'),
@@ -252,11 +273,11 @@
     }
 
     function categoryOf(r){
-      const t = (r.Type||'').toString().toLowerCase();
-      if(t.includes('ออกแบบใหม่')) return 'artwork';
-      if(t.includes('ตัดคลิปโซเชียล')) return 'video';
-      if(t.includes('motion graphic')) return 'motion';
-      if(t.includes('จองคิวถ่ายงาน')) return 'script';
+      const blob = [r.Type, r.Remark, r.Project, r.Product, r['Footage / Brief']].map(x=>(x||'').toString().toLowerCase()).join(' | ');
+      if(blob.includes('ออกแบบใหม่')) return 'artwork';
+      if(blob.includes('ตัดคลิปโซเชียล')) return 'video';
+      if(blob.includes('motion graphic')) return 'motion';
+      if(blob.includes('จองคิวถ่ายงาน')) return 'script';
       return '';
     }
 
@@ -265,6 +286,7 @@
       const pf = els.plat.value; const ds = els.designer.value; const st = els.status.value; const cat = els.category.value;
       const df = els.dateFrom.value ? new Date(els.dateFrom.value+'T00:00:00') : null;
       const dt = els.dateTo.value ? new Date(els.dateTo.value+'T23:59:59') : null;
+      const dateKey = els.dateSource.value || 'Deadline';
 
       const filtered = rows.filter(r => {
         const s = computeStatus(r);
@@ -273,10 +295,14 @@
         const matchDes = !ds || r.Designer === ds;
         const matchSt = !st || s === st;
         const matchCat = !cat || categoryOf(r) === cat;
-        const ddl = parseThaiDate(r.Deadline);
-        const matchDate = (!df && !dt) || (ddl && (!df || ddl>=df) && (!dt || ddl<=dt));
+        const dval = parseThaiDate(r[dateKey]);
+        const matchDate = (!df && !dt) || (dval && (!df || dval>=df) && (!dt || dval<=dt));
         return matchQ && matchPlat && matchDes && matchSt && matchCat && matchDate;
       });
+      updateKPIs(filtered);
+      renderCharts(filtered);
+      renderTable(filtered);
+    });
       updateKPIs(filtered);
       renderCharts(filtered);
       renderTable(filtered);
@@ -438,20 +464,51 @@
     els.designer.addEventListener('change', applyFilters);
     els.status.addEventListener('change', applyFilters);
     els.category.addEventListener('change', applyFilters);
+    els.dateSource.addEventListener('change', applyFilters);
     els.dateFrom.addEventListener('change', applyFilters);
     els.dateTo.addEventListener('change', applyFilters);
 
-    els.import.addEventListener('click', ()=> els.file.click());
-    els.file.addEventListener('change', e=>{
-      const f = e.target.files[0]; if(!f) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        try{ rows = rowsFromCSV(reader.result); }catch(err){ alert('อ่านไฟล์ไม่สำเร็จ: '+ err.message); }
-        // rebuild dropdowns
-        els.plat.innerHTML='<option value="">ทุกแพลตฟอร์ม</option>';
-        els.designer.innerHTML='<option value="">ทุกดีไซเนอร์</option>';
-        buildFilters();
-        applyFilters();
+    // Quick date buttons
+    function setRange(from, to){
+      const f = from.toISOString().slice(0,10);
+      const t = to.toISOString().slice(0,10);
+      els.dateFrom.value=f; els.dateTo.value=t; applyFilters();
+    }
+    els.btn7.addEventListener('click', ()=>{
+      const today = new Date(); today.setHours(0,0,0,0);
+      const from = new Date(today); from.setDate(from.getDate()-6);
+      setRange(from, today);
+    });
+    els.btn30.addEventListener('click', ()=>{
+      const today = new Date(); today.setHours(0,0,0,0);
+      const from = new Date(today); from.setDate(from.getDate()-29);
+      setRange(from, today);
+    });
+    els.btnMonth.addEventListener('click', ()=>{
+      const now = new Date();
+      const first = new Date(now.getFullYear(), now.getMonth(), 1);
+      const last = new Date(now.getFullYear(), now.getMonth()+1, 0);
+      setRange(first, last);
+    });
+
+    // Export PDF of Dashboard page
+    els.exportPdf.addEventListener('click', async ()=>{
+      const node = document.getElementById('pageDash');
+      const canvas = await html2canvas(node, {scale:2, backgroundColor:'#0b1020'});
+      const img = canvas.toDataURL('image/png');
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF('landscape','pt','a4');
+      const pageW = pdf.internal.pageSize.getWidth();
+      const pageH = pdf.internal.pageSize.getHeight();
+      const imgW = pageW - 40, imgH = canvas.height * (imgW / canvas.width);
+      pdf.setFontSize(12);
+      pdf.text('แดชบอร์ดงานออกแบบ', 20, 20);
+      pdf.addImage(img, 'PNG', 20, 30, imgW, Math.min(imgH, pageH-50), undefined, 'FAST');
+      const ts = new Date(); const name = `dashboard-${ts.getFullYear()}${String(ts.getMonth()+1).padStart(2,'0')}${String(ts.getDate()).padStart(2,'0')}.pdf`;
+      pdf.save(name);
+    });
+
+    applyFilters();
       };
       reader.readAsText(f);
       e.target.value = '';
