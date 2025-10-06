@@ -599,7 +599,12 @@
 
   <input type="file" id="csvFileInput" accept=".csv" style="display:none">
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js">document.addEventListener('DOMContentLoaded', () => {
+  if (typeof loadData === 'function') {
+    loadData();
+  }
+});
+</script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <script>
@@ -707,21 +712,49 @@
     }
 
     function getUniqueValues(arr, key) {
-      return [...new Set(arr.map(item => (item[key] || '').toString().trim()).filter(Boolean))].sort();
-    }
+  return Array.from(new Set(
+    arr.map(item => (item[key] || '').toString().trim()).filter(Boolean)
+  )).sort();
+}
 
     // Load data
     async function loadData() {
-      const statusEl = document.getElementById('connectionStatus');
-      
-      try {
-        if (!CONFIG.SHEET_URL) throw new Error('No URL');
-        
-        statusEl.textContent = '✅ เชื่อมต่อสำเร็จ';
-        statusEl.style.background = 'rgba(16, 185, 129, 0.1)';
-        statusEl.style.borderColor = 'rgba(16, 185, 129, 0.3)';
-        statusEl.style.color = 'var(--success)';
-      } catch (error) {
+  const statusEl = document.getElementById('connectionStatus');
+  try {
+    if (!CONFIG.SHEET_URL) throw new Error('No URL');
+
+    statusEl.textContent = '⚡ กำลังโหลด...';
+
+    const res = await fetch(CONFIG.SHEET_URL, { headers: { 'Accept': 'application/json' } });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    const result = await res.json();
+    data = Array.isArray(result) ? result : (result.rows || []);
+
+    statusEl.textContent = '✅ เชื่อมต่อสำเร็จ';
+    statusEl.style.background = 'rgba(16, 185, 129, 0.1)';
+    statusEl.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+    statusEl.style.color = 'var(--success)';
+  } catch (error) {
+    console.error('Load error:', error);
+    // Fallback to seedData if defined; otherwise keep data as empty array
+    if (typeof seedData !== 'undefined') {
+      data = seedData;
+      statusEl.textContent = '⚠️ ใช้ข้อมูลตัวอย่าง';
+      statusEl.style.background = 'rgba(245, 158, 11, 0.1)';
+      statusEl.style.borderColor = 'rgba(245, 158, 11, 0.3)';
+      statusEl.style.color = 'var(--warning)';
+    } else {
+      data = [];
+      statusEl.textContent = '❌ โหลดข้อมูลไม่สำเร็จ';
+      statusEl.style.background = 'rgba(239, 68, 68, 0.1)';
+      statusEl.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+      statusEl.style.color = 'var(--danger)';
+    }
+  }
+  if (typeof buildFilters === 'function') buildFilters();
+  if (typeof applyFilters === 'function') applyFilters();
+} catch (error) {
         console.error('Load error:', error);
         data = seedData;
         statusEl.textContent = '⚠️ ใช้ข้อมูลตัวอย่าง';
@@ -1102,13 +1135,6 @@
     // Initialize
     loadData();
   </script>
-</body>
-</html>⚡ กำลังโหลด...';
-        const response = await fetch(CONFIG.SHEET_URL);
-        
-        if (!response.ok) throw new Error('Failed to fetch');
-        
-        const result = await response.json();
-        data = Array.isArray(result) ? result : (result.rows || []);
-        
-        statusEl.textContent = '
+
+<script>
+// Mo
