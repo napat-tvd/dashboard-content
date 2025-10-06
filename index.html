@@ -1065,6 +1065,26 @@
       });
     });
 
+    // Reset button
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      // Clear search
+      document.getElementById('searchInput').value = '';
+      
+      // Reset dropdowns
+      document.getElementById('platformFilter').value = '';
+      document.getElementById('designerFilter').value = '';
+      document.getElementById('statusFilter').value = '';
+      document.getElementById('categoryFilter').value = '';
+      document.getElementById('dateSourceFilter').value = 'Deadline';
+      
+      // Clear date range
+      document.getElementById('dateFrom').value = '';
+      document.getElementById('dateTo').value = '';
+
+      // Reload data and reapply filters
+      loadData();
+    });
+
     // Init
     document.addEventListener('DOMContentLoaded', loadData);
   </script>
