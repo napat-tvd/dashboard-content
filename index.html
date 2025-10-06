@@ -404,6 +404,7 @@
             <thead>
               <tr>
                 <th data-sort="row">#</th>
+                <th data-sort="__qty">จำนวน</th><!-- เพิ่มคอลัมน์จำนวน -->
                 <th data-sort="Platform">Platform</th>
                 <th data-sort="Product">Product</th>
                 <th data-sort="Type">Type</th>
@@ -513,6 +514,23 @@
       return '';
     }
 
+    // --------- NEW: ปริมาณ (จำนวนชิ้น) + ตรวจแถวมีความหมาย ---------
+    function getQty(row){
+      const raw = row['จำนวนชิ้น'] ?? row['Quantity'] ?? row['qty'] ?? row['Qty'];
+      const n = Number(String(raw ?? '').toString().replace(/[, ]/g,'').trim());
+      return Number.isFinite(n) && n > 0 ? n : 0;
+    }
+
+    function isMeaningfulRow(r){
+      const hasCore =
+        [r.Platform, r.Product, r.Project, r.Type, r.Remark].some(v => (v ?? '').toString().trim() !== '');
+      const hasAnyDate = !!(parseThaiDate(r.Date) || parseThaiDate(r.Deadline) || parseThaiDate(r.Finish));
+      const approved = toBool(r.Approved);
+      const hasStatus = (r.Status ?? '').toString().trim() !== '';
+      const qty = getQty(r);
+      return hasCore || hasAnyDate || hasStatus || approved || qty > 0;
+    }
+
     function computeStatus(row) {
       // 1) Approved wins
       if (toBool(row.Approved)) return 'เสร็จแล้ว';
@@ -555,10 +573,10 @@
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
         const result = await res.json();
-        data = Array.isArray(result) ? result : (result.rows || []);
+        const rows = Array.isArray(result) ? result : (result.rows || []);
 
-        // Light normalize (in case App Script didn’t normalize)
-        data = data.map(r => ({ ...r, Approved: toBool(r.Approved) }));
+        // Normalize + ตัดแถวว่างออก
+        data = rows.map(r => ({ ...r, Approved: toBool(r.Approved) })).filter(isMeaningfulRow);
 
         statusEl.textContent = '✅ เชื่อมต่อสำเร็จ';
         statusEl.style.background = 'rgba(16, 185, 129, 0.1)';
@@ -601,7 +619,6 @@
         designerSelect.appendChild(opt);
       });
 
-      // ถ้ามีดีไซเนอร์จริงค่อยโชว์
       if (designerSelect.children.length > 1) {
         designerSelect.style.display = '';
       }
@@ -619,6 +636,7 @@
       const dtStr = document.getElementById('dateTo').value;
       const dateFrom = dfStr ? new Date(dfStr + 'T00:00:00') : null;
       const dateTo   = dtStr ? new Date(dtStr + 'T23:59:59') : null;
+      const useDateRange = !!(dateFrom || dateTo);
 
       filteredData = data.filter(row => {
         const rowStatus = computeStatus(row);
@@ -633,11 +651,16 @@
         const matchStatus = !status || rowStatus === status;
         const matchCategory = !category || rowCategory === category;
 
-        const baseDate = row[dateKey];
-        const dateVal = baseDate ? parseThaiDate(baseDate) : null;
-        const matchDate = (!dateFrom && !dateTo) || (
-          dateVal && (!dateFrom || dateVal >= dateFrom) && (!dateTo || dateVal <= dateTo)
-        );
+        const baseDateRaw = row[dateKey];
+        const baseDate = baseDateRaw ? parseThaiDate(baseDateRaw) : null;
+
+        // ถ้ากำหนดช่วงวันที่ แต่แถวไม่มีวันที่ -> ไม่ผ่าน
+        if (useDateRange && !baseDate) return false;
+
+        let matchDate = true;
+        if (useDateRange && baseDate){
+          matchDate = (!dateFrom || baseDate >= dateFrom) && (!dateTo || baseDate <= dateTo);
+        }
 
         return matchSearch && matchPlatform && matchDesigner && matchStatus && matchCategory && matchDate;
       });
@@ -660,11 +683,25 @@
       document.getElementById('kpiOngoing').textContent = ongoing;
       document.getElementById('kpiOverdue').textContent = overdue;
 
-      const has = (row, keyword) => (row.Type || '').toLowerCase().includes(keyword);
-      document.getElementById('kpiArtwork').textContent = filteredData.filter(r => has(r, 'ออกแบบใหม่') || has(r, 're design')).length;
-      document.getElementById('kpiVideo').textContent   = filteredData.filter(r => has(r, 'ตัดคลิป') || has(r, 'video')).length;
-      document.getElementById('kpiMotion').textContent  = filteredData.filter(r => has(r, 'motion')).length;
-      document.getElementById('kpiScript').textContent  = filteredData.filter(r => has(r, 'จองคิว') || has(r, 'script')).length;
+      // Artwork: แสดง "จำนวนงาน • จำนวนภาพทั้งหมด"
+      const isArtwork = r => (r.Type || '').toLowerCase().includes('ออกแบบใหม่') || (r.Type || '').toLowerCase().includes('re design');
+      const isVideo   = r => (r.Type || '').toLowerCase().includes('ตัดคลิป') || (r.Type || '').toLowerCase().includes('video');
+      const isMotion  = r => (r.Type || '').toLowerCase().includes('motion');
+      const isScript  = r => (r.Type || '').toLowerCase().includes('จองคิว') || (r.Type || '').toLowerCase().includes('script');
+
+      const artworkRows   = filteredData.filter(isArtwork);
+      const artworkCount  = artworkRows.length;
+      const artworkImages = artworkRows.reduce((sum,r)=> sum + getQty(r), 0);
+
+      const videoCount  = filteredData.filter(isVideo).length;
+      const motionCount = filteredData.filter(isMotion).length;
+      const scriptCount = filteredData.filter(isScript).length;
+
+      // แสดงสองบรรทัดอ่านง่าย
+      document.getElementById('kpiArtwork').innerHTML = `${artworkCount}<div style="font-size:12px;color:#9ca3af">ภาพทั้งหมด ${artworkImages} รูป</div>`;
+      document.getElementById('kpiVideo').textContent   = String(videoCount);
+      document.getElementById('kpiMotion').textContent  = String(motionCount);
+      document.getElementById('kpiScript').textContent  = String(scriptCount);
     }
 
     /* ==============================
@@ -777,9 +814,15 @@
       tbody.innerHTML = '';
 
       const sorted = [...filteredData]
-        .map((row, idx) => ({ ...row, _idx: idx + 1 }))
+        .map((row, idx) => ({ ...row, _idx: idx + 1, __qty: getQty(row) }))
         .sort((a, b) => {
           if (sortKey === 'row') return sortDir * (a._idx - b._idx);
+
+          // sort by จำนวน
+          if (sortKey === '__qty'){
+            if (a.__qty === b.__qty) return 0;
+            return sortDir * (a.__qty > b.__qty ? 1 : -1);
+          }
 
           let valA = a[sortKey];
           let valB = b[sortKey];
@@ -809,6 +852,7 @@
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>${row._idx}</td>
+          <td>${row.__qty || '-'}</td>
           <td><span class="platform-tag">${row.Platform || '-'}</span></td>
           <td>${row.Product || '-'}</td>
           <td>${row.Type || '-'}</td>
@@ -879,7 +923,7 @@
       const now = new Date();
       const first = new Date(now.getFullYear(), now.getMonth(), 1);
       const last  = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-      document.getElementById('dateFrom').value = first.toISOString().split('T')[0];
+      document.getElementById('dateFrom').value = first.toISOString().split( 'T')[0];
       document.getElementById('dateTo').value   = last.toISOString().split('T')[0];
       applyFilters();
     });
@@ -906,6 +950,9 @@
           });
           return obj;
         });
+
+        // Normalize + filter empty after CSV as well
+        data = data.map(r => ({ ...r, Approved: toBool(r.Approved) })).filter(isMeaningfulRow);
 
         buildFilters();
         applyFilters();
