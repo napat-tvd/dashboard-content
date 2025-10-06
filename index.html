@@ -3,547 +3,1105 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Marketing Tasks Dashboard</title>
+  <title>TVD Content Dashboard</title>
   <style>
-    :root{
-      --bg:#0b1020;--panel:#121b36;--muted:#a9b0c7;--text:#f5f7ff;--brand:#6ea8fe;--accent:#64d2ff;--ok:#3ddc97;--warn:#ffcc00;--danger:#ff6b6b;
-      --chip:#1d2a52;--chip-br:#2a3a6b;--shadow:0 10px 30px rgba(0,0,0,.35);
-      --radius:18px
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    :root {
+      --bg-primary: #0a0e1a;
+      --bg-secondary: #0f1420;
+      --bg-card: linear-gradient(145deg, rgba(20, 28, 50, 0.8), rgba(15, 20, 35, 0.6));
+      --border: rgba(100, 150, 255, 0.15);
+      --border-hover: rgba(100, 150, 255, 0.3);
+      --text-primary: #e8eaf0;
+      --text-secondary: #9ca3af;
+      --text-muted: #6b7280;
+      --accent-blue: #3b82f6;
+      --accent-cyan: #06b6d4;
+      --accent-purple: #8b5cf6;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
     }
-    *{box-sizing:border-box}body{margin:0;background:radial-gradient(1200px 800px at 20% -20%,#1a2454 0%, rgba(26,36,84,0) 60%),
-      radial-gradient(1000px 800px at 110% 0%, #0d1539 0%, rgba(13,21,57,0) 50%), var(--bg);color:var(--text);font:14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, 'Noto Sans Thai', sans-serif}
-    .wrap{max-width:1200px;margin:32px auto;padding:0 20px}
-    header{display:flex;align-items:center;gap:16px;margin-bottom:18px}
-    .logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--brand),var(--accent));box-shadow:var(--shadow)}
-    h1{font-size:24px;margin:0}
-    .panel{background:linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.03));backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);box-shadow:var(--shadow)}
 
-    /* Controls */
-    .controls{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr 1fr 1fr 1fr auto auto;gap:10px;padding:14px}
-    .controls .btns{display:flex;gap:8px;flex-wrap:wrap}
-    .controls .btns button{white-space:nowrap}
-    .controls .group{display:flex;gap:10px}
-    input[type="search"], select, button, .chip{appearance:none;background:#0f1731;border:1px solid #253161;color:var(--text);padding:10px 12px;border-radius:12px;outline:none}
-    input[type="search"]{width:100%}
-    select{width:100%}
-    button{cursor:pointer;transition:.2s transform}
-    button:hover{transform:translateY(-1px)}
-    .ghost{background:transparent;border-color:#2d3a74}
+    body {
+      font-family: 'Inter', 'Noto Sans Thai', system-ui, -apple-system, sans-serif;
+      background: radial-gradient(ellipse at top, #1e293b 0%, var(--bg-primary) 50%);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
 
-    /* KPI cards */
-    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:14px}
-    .kpi{padding:16px;border-radius:16px;background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08)}
-    .kpi h3{margin:0 0 6px;font-size:13px;color:var(--muted);font-weight:600}
-    .kpi .num{font-size:28px;font-weight:800}
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    /* Header */
+    .header {
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px 32px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .logo {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 24px;
+      box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
+    }
+
+    .header-content h1 {
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 4px;
+    }
+
+    .header-subtitle {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .status-badge {
+      margin-left: auto;
+      padding: 8px 16px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 999px;
+      font-size: 13px;
+      color: var(--success);
+      font-weight: 500;
+    }
+
+    /* Navigation Tabs */
+    .nav-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .nav-tab {
+      padding: 12px 24px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .nav-tab:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+    }
+
+    .nav-tab.active {
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+      color: white;
+      border-color: transparent;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    }
+
+    /* Filters Panel */
+    .filters-panel {
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .filters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .filter-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-size: 14px;
+      transition: all 0.3s;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .date-range {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 12px 20px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+      white-space: nowrap;
+    }
+
+    button:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    button.primary {
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+      border: none;
+      color: white;
+    }
+
+    button.primary:hover {
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    }
+
+    /* KPI Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan));
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--border-hover);
+    }
+
+    .kpi-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .kpi-value {
+      font-size: 32px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Charts */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .chart-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .chart-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: var(--text-primary);
+    }
 
     /* Table */
-    .table-wrap{margin-top:14px}
-    table{width:100%;border-collapse:separate;border-spacing:0;min-width:960px}
-    thead th{position:sticky;top:0;background:#0e162f;z-index:2}
-    th,td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.06);text-align:left}
-    tbody tr:hover{background:rgba(255,255,255,.03)}
-    th{font-size:12px;color:#9fb1ff;text-transform:uppercase;letter-spacing:.06em;cursor:pointer}
+    .table-container {
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
 
-    /* Chips */
-    .status{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;border:1px solid var(--chip-br);background:var(--chip);font-weight:600}
-    .status.done{color:#b1ffd9;border-color:rgba(61,220,151,.3)}
-    .status.ongo{color:#cfe3ff}
-    .status.over{color:#ffe2b2;border-color:rgba(255,204,0,.35)}
-    .status.none{color:#ffd0d0;border-color:rgba(255,107,107,.35)}
+    .table-wrapper {
+      overflow-x: auto;
+    }
 
-    .platform{padding:4px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);font-size:12px}
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1200px;
+    }
 
-    /* Footer */
-    .foot{display:flex;gap:10px;flex-wrap:wrap;padding:14px}
-    .small{color:var(--muted);font-size:12px}
-    .link{color:#cde1ff;text-decoration:underline;cursor:pointer}
+    thead {
+      background: var(--bg-secondary);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    th {
+      padding: 16px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    th:hover {
+      color: var(--accent-blue);
+    }
+
+    td {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+
+    tbody tr {
+      transition: background 0.2s;
+    }
+
+    tbody tr:hover {
+      background: rgba(59, 130, 246, 0.05);
+    }
+
+    /* Status Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid;
+    }
+
+    .badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .badge-done {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: rgba(16, 185, 129, 0.3);
+      color: var(--success);
+    }
+
+    .badge-done::before { background: var(--success); }
+
+    .badge-ongoing {
+      background: rgba(59, 130, 246, 0.1);
+      border-color: rgba(59, 130, 246, 0.3);
+      color: var(--accent-blue);
+    }
+
+    .badge-ongoing::before { background: var(--accent-blue); }
+
+    .badge-overdue {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: var(--danger);
+    }
+
+    .badge-overdue::before { background: var(--danger); }
+
+    .badge-pending {
+      background: rgba(245, 158, 11, 0.1);
+      border-color: rgba(245, 158, 11, 0.3);
+      color: var(--warning);
+    }
+
+    .badge-pending::before { background: var(--warning); }
+
+    .platform-tag {
+      padding: 4px 10px;
+      background: rgba(139, 92, 246, 0.1);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent-purple);
+    }
+
+    .hidden { display: none; }
 
     /* Responsive */
-    @media (max-width:900px){
-      .controls{grid-template-columns:1fr;}
-      .kpis{grid-template-columns:repeat(2,1fr)}
-      table{min-width:720px}
+    @media (max-width: 768px) {
+      .container { padding: 16px; }
+      .header { flex-direction: column; text-align: center; }
+      .status-badge { margin-left: 0; }
+      .filters-grid { grid-template-columns: 1fr; }
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+      .charts-grid { grid-template-columns: 1fr; }
     }
-      /* Tabs & Charts */
-    .tabs{display:flex;gap:8px;padding:0 14px 8px}
-    .tab{background:#0f1731;border:1px solid #253161;color:var(--text);padding:8px 12px;border-radius:12px;cursor:pointer}
-    .tab.active{background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border-color:#3a4aa0}
-    .hidden{display:none}
-    .charts{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:12px;padding:0 14px 14px}
-    canvas{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:10px}
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div class="logo"></div>
-      <div>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="logo">TV</div>
+      <div class="header-content">
         <h1>TVD Content Report</h1>
-        <div class="small">แดชบอร์ดเชื่อม Google Sheet • กรองและวิเคราะห์แบบเรียลไทม์ • ส่งออก PDF • <span id="dataSrc">(ยังไม่เชื่อมต่อ)</span></div>
+        <div class="header-subtitle">แดชบอร์ดเชื่อม Google Sheet • วิเคราะห์แบบเรียลไทม์</div>
       </div>
-    </header>
+      <div class="status-badge" id="connectionStatus">⚡ กำลังเชื่อมต่อ...</div>
+    </div>
 
-    <section class="panel">
-      <div class="controls">
-        <input id="q" type="search" placeholder="ค้นหา Project / Product / Remark / Master…" />
-        <select id="plat"><option value="">ทุกแพลตฟอร์ม</option></select>
-        <select id="designer"><option value="">ทุกดีไซเนอร์</option></select>
-        <select id="status"><option value="">ทุกสถานะ</option><option value="เสร็จแล้ว">เสร็จแล้ว</option><option value="อยู่ในกำหนด">อยู่ในกำหนด</option><option value="เลยกำหนด">เลยกำหนด</option><option value="ยังไม่ได้กำหนด">ยังไม่ได้กำหนด</option></select>
-        <select id="category">
-          <option value="">ทุกหมวดงาน</option>
-          <option value="artwork">Artwork (ออกแบบใหม่)</option>
-          <option value="video">Video (ตัดคลิปโซเชียล)</option>
-          <option value="motion">Motion (Motion Graphic)</option>
-          <option value="script">Script ออกกอง (จองคิวถ่ายงาน)</option>
-        </select>
-        <select id="dateSource" title="เลือกฟิลด์วันที่ที่จะใช้กรอง">
-          <option value="Deadline">อิงวันที่: Deadline</option>
-          <option value="Date">อิงวันที่: Date</option>
-          <option value="MaxDate">อิงวันที่: MaxDate</option>
-        </select>
-        <div class="group">
-          <input id="dateFrom" type="date" title="ตั้งแต่วันที่" />
-          <input id="dateTo" type="date" title="ถึงวันที่" />
+    <!-- Navigation -->
+    <div class="nav-tabs">
+      <button class="nav-tab active" data-page="dashboard">📊 Dashboard</button>
+      <button class="nav-tab" data-page="details">📋 รายการงาน</button>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-panel">
+      <div class="filters-grid">
+        <div class="filter-group">
+          <label class="filter-label">🔍 ค้นหา</label>
+          <input id="searchInput" type="search" placeholder="ค้นหา Project, Product, Remark...">
         </div>
-        <div class="btns">
-          <button id="btn7" class="ghost">7 วันล่าสุด</button>
-          <button id="btn30" class="ghost">30 วันล่าสุด</button>
-          <button id="btnMonth" class="ghost">เดือนนี้</button>
+        
+        <div class="filter-group">
+          <label class="filter-label">📱 Platform</label>
+          <select id="platformFilter">
+            <option value="">ทุกแพลตฟอร์ม</option>
+          </select>
         </div>
-        <div class="group">
-          
-          <button id="exportPdf">บันทึก PDF (หน้า Dashboard)</button>
-          <button id="reset">รีเซ็ต</button>
+
+        <div class="filter-group">
+          <label class="filter-label">👤 Designer</label>
+          <select id="designerFilter">
+            <option value="">ทุกดีไซเนอร์</option>
+          </select>
         </div>
-      </div>
-        <div class="group">
-          <button id="importCsv" class="ghost">นำเข้า CSV</button>
-          <button id="reset">รีเซ็ต</button>
+
+        <div class="filter-group">
+          <label class="filter-label">📌 สถานะ</label>
+          <select id="statusFilter">
+            <option value="">ทุกสถานะ</option>
+            <option value="เสร็จแล้ว">เสร็จแล้ว</option>
+            <option value="อยู่ในกำหนด">อยู่ในกำหนด</option>
+            <option value="เลยกำหนด">เลยกำหนด</option>
+            <option value="ยังไม่ได้กำหนด">ยังไม่ได้กำหนด</option>
+          </select>
         </div>
-      </div>
-      <div class="tabs">
-        <button class="tab active" data-page="pageDash">Dashboard</button>
-        <button class="tab" data-page="pageDetails">รายการงาน</button>
+
+        <div class="filter-group">
+          <label class="filter-label">🎨 ประเภทงาน</label>
+          <select id="categoryFilter">
+            <option value="">ทุกประเภท</option>
+            <option value="artwork">Artwork</option>
+            <option value="video">Video</option>
+            <option value="motion">Motion Graphic</option>
+            <option value="script">Script ออกกอง</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">📅 อิงวันที่</label>
+          <select id="dateSourceFilter">
+            <option value="Deadline">Deadline</option>
+            <option value="Date">Date</option>
+            <option value="MaxDate">MaxDate</option>
+          </select>
+        </div>
+
+        <div class="filter-group date-range">
+          <div>
+            <label class="filter-label">จาก</label>
+            <input id="dateFrom" type="date">
+          </div>
+          <div>
+            <label class="filter-label">ถึง</label>
+            <input id="dateTo" type="date">
+          </div>
+        </div>
       </div>
 
-      <div id="pageDash">
-        <div class="kpis">
-          <div class="kpi"><h3>งานทั้งหมด</h3><div id="kTotal" class="num">0</div></div>
-          <div class="kpi"><h3>เสร็จแล้ว</h3><div id="kDone" class="num">0</div></div>
-          <div class="kpi"><h3>อยู่ในกำหนด</h3><div id="kOngo" class="num">0</div></div>
-          <div class="kpi"><h3>เลยกำหนด</h3><div id="kOver" class="num">0</div></div>
-          <div class="kpi"><h3>งาน Artwork</h3><div id="kArt" class="num">0</div></div>
-          <div class="kpi"><h3>งาน Video</h3><div id="kVid" class="num">0</div></div>
-          <div class="kpi"><h3>งาน Motion</h3><div id="kMot" class="num">0</div></div>
-          <div class="kpi"><h3>Script ออกกอง</h3><div id="kScr" class="num">0</div></div>
+      <div class="action-buttons">
+        <button id="btn7Days">7 วันล่าสุด</button>
+        <button id="btn30Days">30 วันล่าสุด</button>
+        <button id="btnThisMonth">เดือนนี้</button>
+        <button id="importBtn">📁 นำเข้า CSV</button>
+        <button id="exportBtn" class="primary">💾 ส่งออก PDF</button>
+        <button id="resetBtn">🔄 รีเซ็ต</button>
+      </div>
+    </div>
+
+    <!-- Dashboard View -->
+    <div id="dashboardView">
+      <!-- KPI Cards -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">งานทั้งหมด</div>
+          <div class="kpi-value" id="kpiTotal">0</div>
         </div>
-        <div class="charts">
-          <canvas id="chStatus" height="220"></canvas>
-          <canvas id="chPlatform" height="220"></canvas>
-          <canvas id="chType" height="220"></canvas>
+        <div class="kpi-card">
+          <div class="kpi-label">✅ เสร็จแล้ว</div>
+          <div class="kpi-value" id="kpiDone">0</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">⏳ อยู่ในกำหนด</div>
+          <div class="kpi-value" id="kpiOngoing">0</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">⚠️ เลยกำหนด</div>
+          <div class="kpi-value" id="kpiOverdue">0</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">🎨 Artwork</div>
+          <div class="kpi-value" id="kpiArtwork">0</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">🎬 Video</div>
+          <div class="kpi-value" id="kpiVideo">0</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">✨ Motion</div>
+          <div class="kpi-value" id="kpiMotion">0</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">📝 Script</div>
+          <div class="kpi-value" id="kpiScript">0</div>
         </div>
       </div>
 
-      <div id="pageDetails" class="hidden">
-        <div class="table-wrap">
-        <div style="overflow:auto;border-radius:0 0 var(--radius) var(--radius);border-top:1px solid rgba(255,255,255,.06)">
-          <table id="tbl">
-            <thead>
-              <tr>
-                <th data-key="row">#</th>
-                <th data-key="Platform">Platform</th>
-                <th data-key="Product">Product</th>
-                <th data-key="Type">Type</th>
-                <th data-key="Project">Project</th>
-                <th data-key="Remark">Remark</th>
-                <th data-key="Assignor">Assignor</th>
-                <th data-key="Date">Date</th>
-                <th data-key="MaxDate">MaxDate</th>
-                <th data-key="Month">Month</th>
-                <th data-key="Deadline">Deadline</th>
-                <th data-key="Designer">Designer</th>
-                <th data-key="Finish">Finish</th>
-                <th data-key="Status">Status</th>
-                <th data-key="Approved">Approved</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
+      <!-- Charts -->
+      <div class="charts-grid">
+        <div class="chart-card">
+          <div class="chart-title">สถานะงาน</div>
+          <canvas id="statusChart"></canvas>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Platform</div>
+          <canvas id="platformChart"></canvas>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">ประเภทงาน</div>
+          <canvas id="typeChart"></canvas>
         </div>
       </div>
     </div>
 
-      <div class="foot">
-        <div class="small">แหล่งข้อมูล: Google Sheet (เริ่มอ่านตั้งแต่แถว A2; แถว A1 เป็นคำอธิบาย)</div>
+    <!-- Details View -->
+    <div id="detailsView" class="hidden">
+      <div class="table-container">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th data-sort="row">#</th>
+                <th data-sort="Platform">Platform</th>
+                <th data-sort="Product">Product</th>
+                <th data-sort="Type">Type</th>
+                <th data-sort="Project">Project</th>
+                <th data-sort="Remark">Remark</th>
+                <th data-sort="Designer">Designer</th>
+                <th data-sort="Date">Date</th>
+                <th data-sort="Deadline">Deadline</th>
+                <th data-sort="Status">Status</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
       </div>
-        <div class="small">เคล็ดลับ: ส่งออกจาก Google Sheets เป็น CSV แล้วกด “นำเข้า CSV” ได้เลย</div>
-      </div>
-    </section>
+    </div>
   </div>
 
-  
+  <input type="file" id="csvFileInput" accept=".csv" style="display:none">
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <script>
-    // ---------- Utilities ----------
-    const TH_MONTHS = {"ม.ค.":1,"ก.พ.":2,"มี.ค.":3,"เม.ย.":4,"พ.ค.":5,"มิ.ย.":6,"ก.ค.":7,"ส.ค.":8,"ก.ย.":9,"ต.ค.":10,"พ.ย.":11,"ธ.ค.":12};
-    function pad(n){return n<10?"0"+n:n}
-    function parseThaiDate(s){
-      if(!s) return null;
-      s = String(s).trim();
-      // Accept ISO like 2025-09-29
-      if(/^\d{4}-\d{2}-\d{2}$/.test(s)) return new Date(s+"T00:00:00");
-      // Accept 29/ก.ย./25 or 29/ก.ย./2025 (spaces tolerated)
-      const m = s.match(/(\d{1,2})\s*\/\s*([ก-๙\.]+)\s*\/\s*(\d{2,4})/);
-      if(m){
-        const d = +m[1];
-        const monTxt = m[2].replace(/\./g, ".");
-        const yRaw = +m[3];
-        const y = yRaw < 100 ? 2000 + yRaw : yRaw; // assume 20xx
-        const mon = TH_MONTHS[monTxt];
-        if(!mon) return null;
-        return new Date(`${y}-${pad(mon)}-${pad(d)}T00:00:00`);
+    // Configuration
+    const CONFIG = {
+      SHEET_URL: 'https://script.google.com/macros/s/AKfycbyY1VmjtZF0jrBNusPVdosb8kp3kdtvzt4Rme5uVXeHHp8LynaCZvbE0FNgOVgwnT26/exec'
+    };
+
+    // Thai month mapping
+    const TH_MONTHS = {
+      "ม.ค.": 1, "ก.พ.": 2, "มี.ค.": 3, "เม.ย.": 4, "พ.ค.": 5, "มิ.ย.": 6,
+      "ก.ค.": 7, "ส.ค.": 8, "ก.ย.": 9, "ต.ค.": 10, "พ.ย.": 11, "ธ.ค.": 12
+    };
+
+    // State
+    let data = [];
+    let filteredData = [];
+    let sortKey = 'row';
+    let sortDir = 1;
+    let charts = {};
+
+    // Seed data
+    const seedData = [
+      {Platform:"FACEBOOK", Product:"SmartGuard เครื่องดักยุง", Type:"ออกแบบใหม่", Project:"SmartGenAir-Bar", Remark:"SideBar (vdo 9:16)", Date:"29/ก.ย./25", Deadline:"29/ก.ย./25", Designer:"ต้อง", Finish:"29/ก.ย./25", Approved:true},
+      {Platform:"FACEBOOK", Product:"Suklife น้ำมันอโวคาโด", Type:"ออกแบบใหม่", Project:"Suklife-Avocado", Remark:"Bar ข้าง", Date:"29/ก.ย./25", Deadline:"29/ก.ย./25", Designer:"เอ๊ะ", Finish:"29/ก.ย./25", Approved:true},
+      {Platform:"FACEBOOK", Product:"BSRB", Type:"แก้ไขงาน", Project:"AD-BSRB-ProBar", Remark:"Bar ข้าง", Date:"29/ก.ย./25", Deadline:"29/ก.ย./25", Designer:"ต้อง", Finish:"29/ก.ย./25", Approved:true},
+      {Platform:"SHOPEE", Product:"Sanshiro", Type:"Re Design", Project:"Feature-Sanshiro FT-010", Remark:"Product Feature", Date:"2/ต.ค./25", Deadline:"2/ต.ค./25", Designer:"ต้อง", Finish:"2/ต.ค./25", Approved:true},
+      {Platform:"FACEBOOK", Product:"เพรียวลม", Type:"ออกแบบใหม่", Project:"Ads-BAR-เพรียวลม", Remark:"Bar ข้าง A-B", Date:"3/ต.ค./25", Deadline:"3/ต.ค./25", Designer:"ต้อง", Finish:"3/ต.ค./25", Approved:true},
+      {Platform:"TIKTOK", Product:"อื่นๆ", Type:"Motion Graphic", Project:"Motion Tiktok 10.10", Remark:"Motion สำหรับ Live", Date:"10/ต.ค./25", Deadline:"10/ต.ค./25", Designer:"เอ๊ะ", Finish:"2/ต.ค./25", Approved:true},
+      {Platform:"FACEBOOK", Product:"Sanshiro", Type:"จองคิวถ่ายงาน", Project:"Sanshiro Script Ads FB", Remark:"หน้า 1", Date:"1/ต.ค./25", Deadline:"1/ต.ค./25", Designer:"", Finish:"", Approved:false},
+      {Platform:"FACEBOOK", Product:"เพรียวลม", Type:"จองคิวถ่ายงาน", Project:"เพรียวลม Script Ads FB", Remark:"หน้า 1", Date:"1/ต.ค./25", Deadline:"1/ต.ค./25", Designer:"", Finish:"", Approved:false}
+    ];
+
+    // Utilities
+    function parseThaiDate(str) {
+      if (!str) return null;
+      str = String(str).trim();
+      
+      if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
+        return new Date(str + 'T00:00:00');
       }
+      
+      const match = str.match(/(\d{1,2})\s*\/\s*([ก-๙\.]+)\s*\/\s*(\d{2,4})/);
+      if (match) {
+        const day = parseInt(match[1]);
+        const monthStr = match[2].replace(/\./g, '.');
+        let year = parseInt(match[3]);
+        year = year < 100 ? 2000 + year : year;
+        
+        const month = TH_MONTHS[monthStr];
+        if (!month) return null;
+        
+        return new Date(`${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}T00:00:00`);
+      }
+      
       return null;
     }
-    function fmtDate(d){if(!d) return ""; return d.toLocaleDateString('th-TH', { year:'numeric', month:'short', day:'2-digit'})}
 
-    function computeStatus(row){
-      // Approved TRUE -> เสร็จแล้ว
-      if(String(row.Approved).toLowerCase()==='true') return 'เสร็จแล้ว';
-      // Finish not empty -> เสร็จแล้ว
-      if(row.Finish && String(row.Finish).trim() !== '') return 'เสร็จแล้ว';
+    function computeStatus(row) {
+      if (String(row.Approved).toLowerCase() === 'true' || row.Approved === true) {
+        return 'เสร็จแล้ว';
+      }
+      if (row.Finish && String(row.Finish).trim() !== '') {
+        return 'เสร็จแล้ว';
+      }
+      
       const deadline = parseThaiDate(row.Deadline);
-      if(deadline){
-        const today = new Date(); today.setHours(0,0,0,0);
-        if(deadline < today) return 'เลยกำหนด';
+      if (deadline) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (deadline < today) return 'เลยกำหนด';
         return 'อยู่ในกำหนด';
       }
+      
       return 'ยังไม่ได้กำหนด';
     }
 
-    function statusClass(s){
-      if(s==='เสร็จแล้ว') return 'done';
-      if(s==='อยู่ในกำหนด') return 'ongo';
-      if(s==='เลยกำหนด') return 'over';
-      return 'none';
+    function getStatusClass(status) {
+      const map = {
+        'เสร็จแล้ว': 'done',
+        'อยู่ในกำหนด': 'ongoing',
+        'เลยกำหนด': 'overdue',
+        'ยังไม่ได้กำหนด': 'pending'
+      };
+      return map[status] || 'pending';
     }
 
-    // ---------- Data (seed with your sample) ----------
-    const seed = [
-      {"จำนวนชิ้น":1, Platform:"FACEBOOK", Product:"SmartGuard เครื่องดักยุง", Type:"ออกแบบใหม่", Project:"SmartGenAir-Bar-ปกป้องคนรักด้วยอากาศสะอาด", "Footage / Brief":"20250929-SmartGenAir-Bar-ปกป้องคนรักด้วยอากาศสะอาด", Remark:"SideBar (vdo 9:16)", Assignor:"อาร์ม", Date:"29/ก.ย./25", MaxDate:"29/ก.ย./25", Month:"2025-กันยายน", "On-Going":"No", Deadline:"29/ก.ย./25", Designer:"ต้อง", Finish:"29/ก.ย./25", "Master / AW":"20250929-SmartGenAir-Bar-ปกป้องคนรักด้วยอากาศสะอาด", Status:"เสร็จแล้ว", Approved:true },
-      {"จำนวนชิ้น":1, Platform:"CHAT", Product:"อื่นๆ", Type:"ออกแบบใหม่", Project:"UltimateCollagen-Promotion500000mg", "Footage / Brief":"messageImage_1759119442379.jpg", Remark:"FB 1:1", Assignor:"อ้อย", Date:"29/ก.ย./25", MaxDate:"29/ก.ย./25", Month:"2025-กันยายน", "On-Going":"No", Deadline:"29/ก.ย./25", Designer:"เอ๊ะ", Finish:"29/ก.ย./25", "Master / AW":"29_09_2025 Ultimate Collagen", Status:"เสร็จแล้ว", Approved:true },
-      {"จำนวนชิ้น":1, Platform:"FACEBOOK", Product:"อื่นๆ", Type:"ออกแบบใหม่", Project:"สุขกายะ น้ำมันสมุนไพร", "Footage / Brief":"Brief Pro TV OCT 2025", Remark:"Ads Facebook : ตาม Pro TV", Assignor:"Etc.", Date:"30/ก.ย./25", MaxDate:"29/ก.ย./25", Month:"2025-กันยายน", "On-Going":"No", Deadline:"30/ก.ย./25", Designer:"เอ๊ะ", Finish:"29/ก.ย./25", "Master / AW":"ADs-TV-OCT2025", Status:"เสร็จแล้ว", Approved:true },
-      {"จำนวนชิ้น":1, Platform:"FACEBOOK", Product:"อื่นๆ", Type:"ออกแบบใหม่", Project:"สุขกายะ มอยเจอร์ไรซิ่ง เฮอเบิล ครีม", "Footage / Brief":"Brief Pro TV OCT 2025", Remark:"Ads Facebook : ตาม Pro TV", Assignor:"Etc.", Date:"30/ต.ค./25", MaxDate:"29/ต.ค./25", Month:"2025-ตุลาคม", "On-Going":"No", Deadline:"30/ต.ค./25", Designer:"ต้อง", Finish:"29/ต.ค./25", "Master / AW":"ADs-TV-OCT2025", Status:"เสร็จแล้ว", Approved:true },
-      {"จำนวนชิ้น":1, Platform:"FACEBOOK", Product:"Suklife น้ำมันอโวคาโด", Type:"ออกแบบใหม่", Project:"Suklife-Avocado", "Footage / Brief":"", Remark:"Bar ข้าง", Assignor:"เจ๋ง", Date:"29/ก.ย./25", MaxDate:"29/ก.ย./25", Month:"2025-กันยายน", "On-Going":"No", Deadline:"29/ก.ย./25", Designer:"เอ๊ะ", Finish:"29/ก.ย./25", "Master / AW":"29_09_2025 Suklife Bar ข้าง", Status:"เสร็จแล้ว", Approved:true },
-      {"จำนวนชิ้น":1, Platform:"FACEBOOK", Product:"BSRB", Type:"แก้ไขงาน", Project:"AD-BSRB-ProBar", "Footage / Brief":"", Remark:"Bar ข้าง", Assignor:"เจ๋ง", Date:"29/ก.ย./25", MaxDate:"29/ก.ย./25", Month:"2025-กันยายน", "On-Going":"No", Deadline:"29/ก.ย./25", Designer:"ต้อง", Finish:"29/ก.ย./25", "Master / AW":"AD-BSRB-ProBar", Status:"เสร็จแล้ว", Approved:true },
-      {"จำนวนชิ้น":2, Platform:"SHOPEE, LAZADA, TIKTOK", Product:"Sanshiro", Type:"Re Design", Project:"Feature-Sanshiro FT-010", "Footage / Brief":"", Remark:"Product Feature", Assignor:"ตู๋", Date:"2/ต.ค./25", MaxDate:"2/ต.ค./25", Month:"2025-ตุลาคม", "On-Going":"No", Deadline:"2/ต.ค./25", Designer:"ต้อง", Finish:"2/ต.ค./25", "Master / AW":"feature-Sanshiro FT-010", Status:"เสร็จแล้ว", Approved:true },
-      {"จำนวนชิ้น":2, Platform:"FACEBOOK", Product:"Suklife น้ำมันอโวคาโด", Type:"ออกแบบใหม่", Project:"Suklife-FB-รวมพลัง", "Footage / Brief":"", Remark:"FB 1:1", Assignor:"เจ๋ง", Date:"1/ต.ค./25", MaxDate:"1/ต.ค./25", Month:"2025-ตุลาคม", "On-Going":"No", Deadline:"1/ต.ค./25", Designer:"ต้อง", Finish:"1/ต.ค./25", "Master / AW":"20251001-Post-Suklife-FBAlbum-รวมพลัง", Status:"เสร็จแล้ว", Approved:true },
-      {"จำนวนชิ้น":2, Platform:"FACEBOOK", Product:"เพรียวลม", Type:"ออกแบบใหม่", Project:"Ads-BAR-เพรียวลม-ซึมไว", "Footage / Brief":"", Remark:"Bar ข้าง A-B", Assignor:"เจ๋ง", Date:"3/ต.ค./25", MaxDate:"3/ต.ค./25", Month:"2025-ตุลาคม", "On-Going":"No", Deadline:"3/ต.ค./25", Designer:"ต้อง", Finish:"3/ต.ค./25", "Master / AW":"Ads-BAR-เพรียวลม-ซึมไว", Status:"เสร็จแล้ว", Approved:true },
-      {"จำนวนชิ้น":1, Platform:"TIKTOK", Product:"อื่นๆ", Type:"Motion Graphic", Project:"01_10_2025 Motion Tiktok 10.10", "Footage / Brief":"", Remark:"Motion สำหรับ Live", Assignor:"Etc.", Date:"10/ต.ค./25", MaxDate:"2/ต.ค./25", Month:"2025-ตุลาคม", "On-Going":"No", Deadline:"10/ต.ค./25", Designer:"เอ๊ะ", Finish:"2/ต.ค./25", "Master / AW":"01_10_2025 Motion Tiktok Topbar", Status:"เสร็จแล้ว", Approved:true },
-      {"จำนวนชิ้น":1, Platform:"TIKTOK", Product:"อื่นๆ", Type:"Motion Graphic", Project:"01_10_2025 Motion Tiktok Halloween", "Footage / Brief":"", Remark:"Motion สำหรับ Live", Assignor:"Etc.", Date:"10/ต.ค./25", MaxDate:"2/ต.ค./25", Month:"2025-ตุลาคม", "On-Going":"No", Deadline:"10/ต.ค./25", Designer:"เอ๊ะ", Finish:"2/ต.ค./25", "Master / AW":"01_10_2025 Motion Tiktok Topbar", Status:"เสร็จแล้ว", Approved:true },
-      {"จำนวนชิ้น":1, Platform:"FACEBOOK", Product:"BSRB", Type:"ตัดคลิป Social", Project:"02102025_BSRB_FC", "Footage / Brief":"", Remark:"FB 1:1", Assignor:"เจ๋ง", Date:"2/ต.ค./25", MaxDate:"2/ต.ค./25", Month:"2025-ตุลาคม", "On-Going":"No", Deadline:"2/ต.ค./25", Designer:"กัน", Finish:"2/ต.ค./25", "Master / AW":"G_02102025_BSRB_FC.mov", Status:"เสร็จแล้ว", Approved:true },
-      {"จำนวนชิ้น":6, Platform:"SHOPEE, LAZADA, TIKTOK", Product:"Sanshiro", Type:"ออกแบบใหม่", Project:"02_10_2025 Feature-Sanshiro FT009", "Footage / Brief":"", Remark:"", Assignor:"Etc.", Date:"3/ต.ค./25", MaxDate:"3/ต.ค./25", Month:"2025-ตุลาคม", "On-Going":"No", Deadline:"3/ต.ค./25", Designer:"เอ๊ะ", Finish:"3/ต.ค./25", "Master / AW":"02_10_2025 Feature-Sanshiro FT009", Status:"เสร็จแล้ว", Approved:true },
-      {"จำนวนชิ้น":1, Platform:"FACEBOOK", Product:"แองจี้ ยาถ่าย", Type:"ออกแบบใหม่", Project:"02_10_2025 Angie Bar ข้าง", "Footage / Brief":"", Remark:"", Assignor:"เจ๋ง", Date:"3/ต.ค./25", MaxDate:"3/ต.ค./25", Month:"2025-ตุลาคม", "On-Going":"No", Deadline:"3/ต.ค./25", Designer:"เอ๊ะ", Finish:"3/ต.ค./25", "Master / AW":"02_10_2025 Angie Bar ข้าง", Status:"เสร็จแล้ว", Approved:true },
-      {"จำนวนชิ้น":1, Platform:"FACEBOOK", Product:"Sanshiro", Type:"จองคิวถ่ายงาน", Project:"Sanshiro Script Ads FB_01", "Footage / Brief":"script plan facebook", Remark:"หน้า 1", Assignor:"เจ๋ง", Date:"1/ต.ค./25", MaxDate:"1/ต.ค./25", Month:"2025-ตุลาคม", "On-Going":"Yes", Deadline:"1/ต.ค./25", Designer:"", Finish:"", "Master / AW":"", Status:"เลยกำหนด", Approved:false },
-      {"จำนวนชิ้น":1, Platform:"FACEBOOK", Product:"Suklife น้ำมันอโวคาโด", Type:"ตัดคลิป Social", Project:"G_02102025_Suklife_แบบเจ๋งๆ", "Footage / Brief":"", Remark:"FB 1:1", Assignor:"เจ๋ง", Date:"2/ต.ค./25", MaxDate:"2/ต.ค./25", Month:"2025-ตุลาคม", "On-Going":"No", Deadline:"2/ต.ค./25", Designer:"กัน", Finish:"2/ต.ค./25", "Master / AW":"G_02102025_Suklife_แบบเจ๋งๆ.mov", Status:"เสร็จแล้ว", Approved:true },
-      {"จำนวนชิ้น":1, Platform:"FACEBOOK", Product:"เพรียวลม", Type:"จองคิวถ่ายงาน", Project:"เพรียวลม Script Ads FB_01", "Footage / Brief":"script plan facebook", Remark:"หน้า 1", Assignor:"เจ๋ง", Date:"1/ต.ค./25", MaxDate:"1/ต.ค./25", Month:"2025-ตุลาคม", "On-Going":"Yes", Deadline:"1/ต.ค./25", Designer:"", Finish:"", "Master / AW":"", Status:"เลยกำหนด", Approved:false },
-      {"จำนวนชิ้น":1, Platform:"FACEBOOK", Product:"SmartGuard เครื่องดักยุง", Type:"จองคิวถ่ายงาน", Project:"SmartGuard Script Ads FB_01", "Footage / Brief":"script plan facebook", Remark:"หน้า 1", Assignor:"เจ๋ง", Date:"1/ต.ค./25", MaxDate:"1/ต.ค./25", Month:"2025-ตุลาคม", "On-Going":"Yes", Deadline:"1/ต.ค./25", Designer:"", Finish:"", "Master / AW":"", Status:"เลยกำหนด", Approved:false },
-      {"จำนวนชิ้น":1, Platform:"FACEBOOK", Product:"เพรียวลม", Type:"ตัดคลิป Social", Project:"G_03102025_เพรียวลม_FC", "Footage / Brief":"", Remark:"FB 1:1", Assignor:"เจ๋ง", Date:"3/ต.ค./25", MaxDate:"3/ต.ค./25", Month:"2025-ตุลาคม", "On-Going":"No", Deadline:"3/ต.ค./25", Designer:"กัน", Finish:"3/ต.ค./25", "Master / AW":"G_03102025_เพรียวลม_FC.mp4", Status:"เสร็จแล้ว", Approved:true },
-      {"จำนวนชิ้น":1, Platform:"FACEBOOK", Product:"SmartGuard เครื่องดักยุง", Type:"ตัดคลิป Social", Project:"G_03102025_SmartGuard_FC", "Footage / Brief":"", Remark:"FB 1:1", Assignor:"เจ๋ง", Date:"3/ต.ค./25", MaxDate:"3/ต.ค./25", Month:"2025-ตุลาคม", "On-Going":"No", Deadline:"3/ต.ค./25", Designer:"กัน", Finish:"3/ต.ค./25", "Master / AW":"G_03102025_SmartGuard_FC.mov", Status:"เสร็จแล้ว", Approved:true }
-    ];
-
-    let rows = seed.map(r => ({...r}));
-    let sortKey = 'row', sortDir = 1; // 1 asc, -1 desc
-    let chStatus, chPlatform, chType; // 1 asc, -1 desc
-
-    // ---------- Rendering ----------
-    const els = {
-      q: document.getElementById('q'), plat: document.getElementById('plat'), designer: document.getElementById('designer'), status: document.getElementById('status'), category: document.getElementById('category'),
-      dateSource: document.getElementById('dateSource'), dateFrom: document.getElementById('dateFrom'), dateTo: document.getElementById('dateTo'),
-      btn7: document.getElementById('btn7'), btn30: document.getElementById('btn30'), btnMonth: document.getElementById('btnMonth'), exportPdf: document.getElementById('exportPdf'),
-      kTotal: document.getElementById('kTotal'), kDone: document.getElementById('kDone'), kOngo: document.getElementById('kOngo'), kOver: document.getElementById('kOver'),
-      kArt: document.getElementById('kArt'), kVid: document.getElementById('kVid'), kMot: document.getElementById('kMot'), kScr: document.getElementById('kScr'),
-      tbody: document.querySelector('#tbl tbody'),
-      reset: document.getElementById('reset')
-    };
-
-    function uniqueVals(arr, key){
-      return [...new Set(arr.map(x => (x[key]??'').toString().trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'th'))
-    }
-
-    function buildFilters(){
-      // Platform
-      for(const v of uniqueVals(rows,'Platform')){
-        const o=document.createElement('option'); o.value=v; o.textContent=v; els.plat.appendChild(o)
-      }
-      for(const v of uniqueVals(rows,'Designer')){
-        const o=document.createElement('option'); o.value=v; o.textContent=v; els.designer.appendChild(o)
-      }
-    }
-
-    function categoryOf(r){
-      const blob = [r.Type, r.Remark, r.Project, r.Product, r['Footage / Brief']].map(x=>(x||'').toString().toLowerCase()).join(' | ');
-      if(blob.includes('ออกแบบใหม่')) return 'artwork';
-      if(blob.includes('ตัดคลิปโซเชียล')) return 'video';
-      if(blob.includes('motion graphic')) return 'motion';
-      if(blob.includes('จองคิวถ่ายงาน')) return 'script';
+    function getCategory(row) {
+      const text = [row.Type, row.Remark, row.Project].join(' ').toLowerCase();
+      if (text.includes('ออกแบบใหม่')) return 'artwork';
+      if (text.includes('ตัดคลิป')) return 'video';
+      if (text.includes('motion')) return 'motion';
+      if (text.includes('จองคิว') || text.includes('script')) return 'script';
       return '';
     }
 
-    function applyFilters(){
-      const q = els.q.value.trim().toLowerCase();
-      const pf = els.plat.value; const ds = els.designer.value; const st = els.status.value; const cat = els.category.value;
-      const df = els.dateFrom.value ? new Date(els.dateFrom.value+'T00:00:00') : null;
-      const dt = els.dateTo.value ? new Date(els.dateTo.value+'T23:59:59') : null;
-      const dateKey = els.dateSource.value || 'Deadline';
+    function getUniqueValues(arr, key) {
+      return [...new Set(arr.map(item => (item[key] || '').toString().trim()).filter(Boolean))].sort();
+    }
 
-      const filtered = rows.filter(r => {
-        const s = computeStatus(r);
-        const matchQ = !q || [r.Project,r.Product,r.Remark,r['Master / AW'],r.Type,r.Platform,r.Designer].some(x => (x||'').toString().toLowerCase().includes(q));
-        const matchPlat = !pf || r.Platform === pf;
-        const matchDes = !ds || r.Designer === ds;
-        const matchSt = !st || s === st;
-        const matchCat = !cat || categoryOf(r) === cat;
-        const dval = parseThaiDate(r[dateKey]);
-        const matchDate = (!df && !dt) || (dval && (!df || dval>=df) && (!dt || dval<=dt));
-        return matchQ && matchPlat && matchDes && matchSt && matchCat && matchDate;
+    // Load data
+    async function loadData() {
+      const statusEl = document.getElementById('connectionStatus');
+      
+      try {
+        if (!CONFIG.SHEET_URL) throw new Error('No URL');
+        
+        statusEl.textContent = '✅ เชื่อมต่อสำเร็จ';
+        statusEl.style.background = 'rgba(16, 185, 129, 0.1)';
+        statusEl.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+        statusEl.style.color = 'var(--success)';
+      } catch (error) {
+        console.error('Load error:', error);
+        data = seedData;
+        statusEl.textContent = '⚠️ ใช้ข้อมูลตัวอย่าง';
+        statusEl.style.background = 'rgba(245, 158, 11, 0.1)';
+        statusEl.style.borderColor = 'rgba(245, 158, 11, 0.3)';
+        statusEl.style.color = 'var(--warning)';
+      }
+      
+      buildFilters();
+      applyFilters();
+    }
+
+    // Build filter options
+    function buildFilters() {
+      const platformSelect = document.getElementById('platformFilter');
+      const designerSelect = document.getElementById('designerFilter');
+      
+      platformSelect.innerHTML = '<option value="">ทุกแพลตฟอร์ม</option>';
+      designerSelect.innerHTML = '<option value="">ทุกดีไซเนอร์</option>';
+      
+      getUniqueValues(data, 'Platform').forEach(val => {
+        const opt = document.createElement('option');
+        opt.value = val;
+        opt.textContent = val;
+        platformSelect.appendChild(opt);
       });
-      updateKPIs(filtered);
-      renderCharts(filtered);
-      renderTable(filtered);
-    });
-      updateKPIs(filtered);
-      renderCharts(filtered);
-      renderTable(filtered);
-    });
-      updateKPIs(filtered);
-      renderCharts(filtered);
-      renderTable(filtered);
-    });
-      updateKPIs(filtered);
-      renderTable(filtered);
+      
+      getUniqueValues(data, 'Designer').forEach(val => {
+        const opt = document.createElement('option');
+        opt.value = val;
+        opt.textContent = val;
+        designerSelect.appendChild(opt);
+      });
     }
 
-    function updateKPIs(list){
-      els.kTotal.textContent = list.length;
-      els.kDone.textContent = list.filter(r=>computeStatus(r)==='เสร็จแล้ว').length;
-      els.kOngo.textContent = list.filter(r=>computeStatus(r)==='อยู่ในกำหนด').length;
-      els.kOver.textContent = list.filter(r=>computeStatus(r)==='เลยกำหนด').length;
+    // Apply filters
+    function applyFilters() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const platform = document.getElementById('platformFilter').value;
+      const designer = document.getElementById('designerFilter').value;
+      const status = document.getElementById('statusFilter').value;
+      const category = document.getElementById('categoryFilter').value;
+      const dateSource = document.getElementById('dateSourceFilter').value;
+      const dateFrom = document.getElementById('dateFrom').value ? new Date(document.getElementById('dateFrom').value + 'T00:00:00') : null;
+      const dateTo = document.getElementById('dateTo').value ? new Date(document.getElementById('dateTo').value + 'T23:59:59') : null;
 
-      const t = s => (s||'').toString().toLowerCase();
-      els.kArt.textContent = list.filter(r=> t(r.Type).includes('ออกแบบใหม่')).length;
-      els.kVid.textContent = list.filter(r=> t(r.Type).includes('ตัดคลิปโซเชียล')).length;
-      els.kMot.textContent = list.filter(r=> t(r.Type).includes('motion graphic')).length;
-      els.kScr.textContent = list.filter(r=> t(r.Type).includes('จองคิวถ่ายงาน')).length;
-    }
-
-    function renderCharts(list){
-      const byStatus = ['เสร็จแล้ว','อยู่ในกำหนด','เลยกำหนด','ยังไม่ได้กำหนด'].map(s => list.filter(r=>computeStatus(r)===s).length);
-      const plats = [...new Set(list.map(r=>r.Platform).filter(Boolean))];
-      const byPlat = plats.map(p => list.filter(r=>r.Platform===p).length);
-      const t = s=> (s||'').toString().toLowerCase();
-      const typeBuckets = ['ออกแบบใหม่','ตัดคลิปโซเชียล','motion graphic','จองคิวถ่ายงาน'];
-      const byType = typeBuckets.map(key => list.filter(r=> t(r.Type).includes(key)).length);
-
-      // Status doughnut
-      const statusCfg = {
-        type:'doughnut',
-        data:{labels:['เสร็จแล้ว','อยู่ในกำหนด','เลยกำหนด','ยังไม่ได้กำหนด'], datasets:[{data:byStatus}]},
-        options:{plugins:{legend:{position:'bottom'}}, cutout:'60%'}
-      };
-      if(!chStatus){ chStatus = new Chart(document.getElementById('chStatus'), statusCfg); } else { chStatus.data.datasets[0].data = byStatus; chStatus.update(); }
-
-      // Platform bar
-      const platCfg = {
-        type:'bar',
-        data:{labels:plats, datasets:[{label:'จำนวนงาน', data:byPlat}]} ,
-        options:{plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}}}
-      };
-      if(!chPlatform){ chPlatform = new Chart(document.getElementById('chPlatform'), platCfg); } else { chPlatform.data.labels = plats; chPlatform.data.datasets[0].data = byPlat; chPlatform.update(); }
-
-      // Type bar
-      const typeCfg = {
-        type:'bar',
-        data:{labels:['Artwork','Video','Motion','Script ออกกอง'], datasets:[{label:'จำนวนงาน', data:byType}]},
-        options:{plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}}}
-      };
-      if(!chType){ chType = new Chart(document.getElementById('chType'), typeCfg); } else { chType.data.datasets[0].data = byType; chType.update(); }
-    }
-
-    function compare(a,b,key){
-      const va = key==='Deadline' || key==='Date' || key==='MaxDate' ? parseThaiDate(a[key]) : (a[key]??'').toString().toLowerCase();
-      const vb = key==='Deadline' || key==='Date' || key==='MaxDate' ? parseThaiDate(b[key]) : (b[key]??'').toString().toLowerCase();
-      if(va==null && vb==null) return 0; if(va==null) return -1; if(vb==null) return 1;
-      if(va>vb) return 1; if(va<vb) return -1; return 0;
-    }
-
-    function renderTable(list){
-      const tbody = els.tbody; tbody.innerHTML='';
-      // sort
-      const arr = list.map((r,i)=>({...r,_row:i+1})).sort((a,b)=>{
-        if(sortKey==='row') return sortDir*(a._row-b._row);
-        return sortDir*compare(a,b,sortKey);
+      filteredData = data.filter(row => {
+        const rowStatus = computeStatus(row);
+        const rowCategory = getCategory(row);
+        
+        const matchSearch = !search || [
+          row.Project, row.Product, row.Remark, row.Type, row.Platform, row.Designer
+        ].some(field => (field || '').toString().toLowerCase().includes(search));
+        
+        const matchPlatform = !platform || row.Platform === platform;
+        const matchDesigner = !designer || row.Designer === designer;
+        const matchStatus = !status || rowStatus === status;
+        const matchCategory = !category || rowCategory === category;
+        
+        const dateVal = parseThaiDate(row[dateSource]);
+        const matchDate = (!dateFrom && !dateTo) || (
+          dateVal && (!dateFrom || dateVal >= dateFrom) && (!dateTo || dateVal <= dateTo)
+        );
+        
+        return matchSearch && matchPlatform && matchDesigner && matchStatus && matchCategory && matchDate;
       });
 
-      for(const r of arr){
-        const s = computeStatus(r);
+      updateKPIs();
+      updateCharts();
+      updateTable();
+    }
+
+    // Update KPIs
+    function updateKPIs() {
+      document.getElementById('kpiTotal').textContent = filteredData.length;
+      document.getElementById('kpiDone').textContent = filteredData.filter(r => computeStatus(r) === 'เสร็จแล้ว').length;
+      document.getElementById('kpiOngoing').textContent = filteredData.filter(r => computeStatus(r) === 'อยู่ในกำหนด').length;
+      document.getElementById('kpiOverdue').textContent = filteredData.filter(r => computeStatus(r) === 'เลยกำหนด').length;
+      
+      const checkType = (row, keyword) => (row.Type || '').toLowerCase().includes(keyword);
+      document.getElementById('kpiArtwork').textContent = filteredData.filter(r => checkType(r, 'ออกแบบใหม่')).length;
+      document.getElementById('kpiVideo').textContent = filteredData.filter(r => checkType(r, 'ตัดคลิป')).length;
+      document.getElementById('kpiMotion').textContent = filteredData.filter(r => checkType(r, 'motion')).length;
+      document.getElementById('kpiScript').textContent = filteredData.filter(r => checkType(r, 'จองคิว')).length;
+    }
+
+    // Update charts
+    function updateCharts() {
+      const statusLabels = ['เสร็จแล้ว', 'อยู่ในกำหนด', 'เลยกำหนด', 'ยังไม่ได้กำหนด'];
+      const statusData = statusLabels.map(label => 
+        filteredData.filter(r => computeStatus(r) === label).length
+      );
+      const statusColors = ['#10b981', '#3b82f6', '#ef4444', '#f59e0b'];
+
+      if (!charts.status) {
+        charts.status = new Chart(document.getElementById('statusChart'), {
+          type: 'doughnut',
+          data: {
+            labels: statusLabels,
+            datasets: [{
+              data: statusData,
+              backgroundColor: statusColors,
+              borderWidth: 0
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+              legend: { position: 'bottom', labels: { color: '#e8eaf0', padding: 15 } }
+            },
+            cutout: '65%'
+          }
+        });
+      } else {
+        charts.status.data.datasets[0].data = statusData;
+        charts.status.update();
+      }
+
+      // Platform chart
+      const platforms = getUniqueValues(filteredData, 'Platform');
+      const platformData = platforms.map(p => filteredData.filter(r => r.Platform === p).length);
+
+      if (!charts.platform) {
+        charts.platform = new Chart(document.getElementById('platformChart'), {
+          type: 'bar',
+          data: {
+            labels: platforms,
+            datasets: [{
+              label: 'จำนวนงาน',
+              data: platformData,
+              backgroundColor: '#3b82f6',
+              borderRadius: 8
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+              legend: { display: false }
+            },
+            scales: {
+              y: { beginAtZero: true, ticks: { color: '#9ca3af' }, grid: { color: 'rgba(100, 150, 255, 0.1)' } },
+              x: { ticks: { color: '#9ca3af' }, grid: { display: false } }
+            }
+          }
+        });
+      } else {
+        charts.platform.data.labels = platforms;
+        charts.platform.data.datasets[0].data = platformData;
+        charts.platform.update();
+      }
+
+      // Type chart
+      const typeLabels = ['Artwork', 'Video', 'Motion', 'Script'];
+      const typeKeywords = ['ออกแบบใหม่', 'ตัดคลิป', 'motion', 'จองคิว'];
+      const typeData = typeKeywords.map(keyword => 
+        filteredData.filter(r => (r.Type || '').toLowerCase().includes(keyword)).length
+      );
+
+      if (!charts.type) {
+        charts.type = new Chart(document.getElementById('typeChart'), {
+          type: 'bar',
+          data: {
+            labels: typeLabels,
+            datasets: [{
+              label: 'จำนวนงาน',
+              data: typeData,
+              backgroundColor: '#8b5cf6',
+              borderRadius: 8
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+              legend: { display: false }
+            },
+            scales: {
+              y: { beginAtZero: true, ticks: { color: '#9ca3af' }, grid: { color: 'rgba(100, 150, 255, 0.1)' } },
+              x: { ticks: { color: '#9ca3af' }, grid: { display: false } }
+            }
+          }
+        });
+      } else {
+        charts.type.data.datasets[0].data = typeData;
+        charts.type.update();
+      }
+    }
+
+    // Update table
+    function updateTable() {
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '';
+
+      const sorted = [...filteredData].map((row, idx) => ({ ...row, _idx: idx + 1 }))
+        .sort((a, b) => {
+          if (sortKey === 'row') return sortDir * (a._idx - b._idx);
+          
+          let valA = a[sortKey];
+          let valB = b[sortKey];
+          
+          if (sortKey === 'Status') {
+            valA = computeStatus(a);
+            valB = computeStatus(b);
+          }
+          
+          if (['Deadline', 'Date', 'MaxDate'].includes(sortKey)) {
+            valA = parseThaiDate(valA);
+            valB = parseThaiDate(valB);
+          } else {
+            valA = (valA || '').toString().toLowerCase();
+            valB = (valB || '').toString().toLowerCase();
+          }
+          
+          if (valA === valB) return 0;
+          if (!valA) return 1;
+          if (!valB) return -1;
+          return sortDir * (valA > valB ? 1 : -1);
+        });
+
+      sorted.forEach(row => {
+        const status = computeStatus(row);
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td>${r._row}</td>
-          <td><span class="platform">${r.Platform||''}</span></td>
-          <td>${r.Product||''}</td>
-          <td>${r.Type||''}</td>
-          <td title="${r.Project||''}">${r.Project||''}</td>
-          <td>${r.Remark||''}</td>
-          <td>${r.Assignor||''}</td>
-          <td>${r.Date||''}</td>
-          <td>${r.MaxDate||''}</td>
-          <td>${r.Month||''}</td>
-          <td>${r.Deadline||''}</td>
-          <td>${r.Designer||''}</td>
-          <td>${r.Finish||''}</td>
-          <td><span class="status ${statusClass(s)}">${s}</span></td>
-          <td>${String(r.Approved)==='true' || r.Approved===true ? 'TRUE' : (String(r.Approved)==='false' ? 'FALSE' : (r.Approved||''))}</td>
+          <td>${row._idx}</td>
+          <td><span class="platform-tag">${row.Platform || '-'}</span></td>
+          <td>${row.Product || '-'}</td>
+          <td>${row.Type || '-'}</td>
+          <td title="${row.Project || ''}">${(row.Project || '-').substring(0, 40)}${(row.Project || '').length > 40 ? '...' : ''}</td>
+          <td>${row.Remark || '-'}</td>
+          <td>${row.Designer || '-'}</td>
+          <td>${row.Date || '-'}</td>
+          <td>${row.Deadline || '-'}</td>
+          <td><span class="badge badge-${getStatusClass(status)}">${status}</span></td>
         `;
         tbody.appendChild(tr);
-      }
+      });
     }
 
-    // ---------- Data Loader (Google Sheet via Apps Script) ----------
-    // ตั้งค่า URL ของ Apps Script Web App ที่คืน JSON จากชีทของคุณ
-    const CONFIG = {
-      APP_URL: 'https://script.google.com/macros/s/AKfycbyY1VmjtZF0jrBNusPVdosb8kp3kdtvzt4Rme5uVXeHHp8LynaCZvbE0FNgOVgwnT26/exec'
-    };
-
-    async function loadFromSheet(){
-      if(!CONFIG.APP_URL){
-        document.getElementById('dataSrc').textContent = '(ยังไม่เชื่อมต่อ)';
-        return false;
-      }
-      try{
-        const res = await fetch(CONFIG.APP_URL, { method:'GET', mode:'cors' });
-        if(!res.ok) throw new Error('HTTP '+res.status);
-        const data = await res.json();
-        // รองรับได้ทั้งรูปแบบ Array (เดิม) หรือ Object { sheetName, rows }
-        let outRows = Array.isArray(data) ? data : (Array.isArray(data.rows) ? data.rows : []);
-        rows = outRows.map(r=>({ ...r }));
-        const srcName = !Array.isArray(data) && data.sheetName ? String(data.sheetName) : '';
-        document.getElementById('dataSrc').textContent = srcName ? `กำลังอ่านจาก: ${srcName}` : 'เชื่อมต่อแล้ว';
-        // rebuild dropdowns
-        els.plat.innerHTML='<option value="">ทุกแพลตฟอร์ม</option>';
-        els.designer.innerHTML='<option value="">ทุกดีไซเนอร์</option>';
-        buildFilters();
-        applyFilters();
-        return true;
-      }catch(err){
-        console.error('โหลดจากชีทไม่สำเร็จ:', err);
-        document.getElementById('dataSrc').textContent = '(เชื่อมต่อไม่สำเร็จ ใช้ข้อมูลตัวอย่าง)';
-        return false;
-      }
-    }
-      try{
-        const res = await fetch(CONFIG.APP_URL, { method:'GET', mode:'cors' });
-        if(!res.ok) throw new Error('HTTP '+res.status);
-        const data = await res.json();
-        // คาดหวัง header ภาษาไทยตามคอลัมน์ A–R (เริ่มอ่านตั้งแต่แถว 2)
-        rows = data.map(r=>({ ...r }));
-        // rebuild dropdowns
-        els.plat.innerHTML='<option value="">ทุกแพลตฟอร์ม</option>';
-        els.designer.innerHTML='<option value="">ทุกดีไซเนอร์</option>';
-        buildFilters();
-        applyFilters();
-        return true;
-      }catch(err){
-        console.error('โหลดจากชีทไม่สำเร็จ:', err);
-        return false;
-      }
-    }
-
-    // ---------- Events ----------
-    // Tabs switching
-    const tabs = document.querySelectorAll('.tab');
-    const pages = { pageDash: document.getElementById('pageDash'), pageDetails: document.getElementById('pageDetails') };
-    tabs.forEach(btn=> btn.addEventListener('click', ()=>{
-      tabs.forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-      const target = btn.getAttribute('data-page');
-      Object.entries(pages).forEach(([k,el])=> el.classList.toggle('hidden', k!==target));
-    }));
-
-    // Filters
-    els.q.addEventListener('input', applyFilters);
-    els.plat.addEventListener('change', applyFilters);
-    els.designer.addEventListener('change', applyFilters);
-    els.status.addEventListener('change', applyFilters);
-    els.category.addEventListener('change', applyFilters);
-    els.dateSource.addEventListener('change', applyFilters);
-    els.dateFrom.addEventListener('change', applyFilters);
-    els.dateTo.addEventListener('change', applyFilters);
-
-    // Quick date buttons
-    function setRange(from, to){
-      const f = from.toISOString().slice(0,10);
-      const t = to.toISOString().slice(0,10);
-      els.dateFrom.value=f; els.dateTo.value=t; applyFilters();
-    }
-    els.btn7.addEventListener('click', ()=>{
-      const today = new Date(); today.setHours(0,0,0,0);
-      const from = new Date(today); from.setDate(from.getDate()-6);
-      setRange(from, today);
+    // Event listeners
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        
+        const page = tab.dataset.page;
+        document.getElementById('dashboardView').classList.toggle('hidden', page !== 'dashboard');
+        document.getElementById('detailsView').classList.toggle('hidden', page !== 'details');
+      });
     });
-    els.btn30.addEventListener('click', ()=>{
-      const today = new Date(); today.setHours(0,0,0,0);
-      const from = new Date(today); from.setDate(from.getDate()-29);
-      setRange(from, today);
+
+    document.getElementById('searchInput').addEventListener('input', applyFilters);
+    document.getElementById('platformFilter').addEventListener('change', applyFilters);
+    document.getElementById('designerFilter').addEventListener('change', applyFilters);
+    document.getElementById('statusFilter').addEventListener('change', applyFilters);
+    document.getElementById('categoryFilter').addEventListener('change', applyFilters);
+    document.getElementById('dateSourceFilter').addEventListener('change', applyFilters);
+    document.getElementById('dateFrom').addEventListener('change', applyFilters);
+    document.getElementById('dateTo').addEventListener('change', applyFilters);
+
+    // Quick date filters
+    document.getElementById('btn7Days').addEventListener('click', () => {
+      const today = new Date();
+      const from = new Date(today);
+      from.setDate(from.getDate() - 6);
+      document.getElementById('dateFrom').value = from.toISOString().split('T')[0];
+      document.getElementById('dateTo').value = today.toISOString().split('T')[0];
+      applyFilters();
     });
-    els.btnMonth.addEventListener('click', ()=>{
+
+    document.getElementById('btn30Days').addEventListener('click', () => {
+      const today = new Date();
+      const from = new Date(today);
+      from.setDate(from.getDate() - 29);
+      document.getElementById('dateFrom').value = from.toISOString().split('T')[0];
+      document.getElementById('dateTo').value = today.toISOString().split('T')[0];
+      applyFilters();
+    });
+
+    document.getElementById('btnThisMonth').addEventListener('click', () => {
       const now = new Date();
       const first = new Date(now.getFullYear(), now.getMonth(), 1);
-      const last = new Date(now.getFullYear(), now.getMonth()+1, 0);
-      setRange(first, last);
+      const last = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      document.getElementById('dateFrom').value = first.toISOString().split('T')[0];
+      document.getElementById('dateTo').value = last.toISOString().split('T')[0];
+      applyFilters();
     });
 
-    // Export PDF of Dashboard page
-    els.exportPdf.addEventListener('click', async ()=>{
-      const node = document.getElementById('pageDash');
-      const canvas = await html2canvas(node, {scale:2, backgroundColor:'#0b1020'});
-      const img = canvas.toDataURL('image/png');
-      const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF('landscape','pt','a4');
-      const pageW = pdf.internal.pageSize.getWidth();
-      const pageH = pdf.internal.pageSize.getHeight();
-      const imgW = pageW - 40, imgH = canvas.height * (imgW / canvas.width);
-      pdf.setFontSize(12);
-      pdf.text('แดชบอร์ดงานออกแบบ', 20, 20);
-      pdf.addImage(img, 'PNG', 20, 30, imgW, Math.min(imgH, pageH-50), undefined, 'FAST');
-      const ts = new Date(); const name = `dashboard-${ts.getFullYear()}${String(ts.getMonth()+1).padStart(2,'0')}${String(ts.getDate()).padStart(2,'0')}.pdf`;
-      pdf.save(name);
+    // CSV Import
+    document.getElementById('importBtn').addEventListener('click', () => {
+      document.getElementById('csvFileInput').click();
     });
 
-    applyFilters();
+    document.getElementById('csvFileInput').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const text = event.target.result;
+        const rows = text.split('\n').map(row => row.split(','));
+        const headers = rows[0];
+        
+        data = rows.slice(1).filter(row => row.length > 1).map(row => {
+          const obj = {};
+          headers.forEach((header, idx) => {
+            obj[header.trim()] = row[idx] ? row[idx].trim() : '';
+          });
+          return obj;
+        });
+        
+        buildFilters();
+        applyFilters();
+        
+        const statusEl = document.getElementById('connectionStatus');
+        statusEl.textContent = '📁 ใช้ไฟล์ CSV';
+        statusEl.style.background = 'rgba(59, 130, 246, 0.1)';
+        statusEl.style.borderColor = 'rgba(59, 130, 246, 0.3)';
+        statusEl.style.color = 'var(--accent-blue)';
       };
-      reader.readAsText(f);
+      reader.readAsText(file);
       e.target.value = '';
     });
 
-    els.reset.addEventListener('click', ()=>{
-      els.q.value=''; els.plat.value=''; els.designer.value=''; els.status.value=''; els.category.value='';
-      els.dateSource.value='Deadline'; els.dateFrom.value=''; els.dateTo.value=''; sortKey='row'; sortDir=1; applyFilters();
-    });
+    // PDF Export
+    document.getElementById('exportBtn').addEventListener('click', async () => {
+      const dashboard = document.getElementById('dashboardView');
+      const canvas = await html2canvas(dashboard, {
+        scale: 2,
+        backgroundColor: '#0a0e1a',
+        logging: false
+      });
+      
+      const imgData = canvas.toDataURL('image/png');
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF('landscape', 'pt', 'a4');
+      
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = pageWidth - 40;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      
+      pdf.text('TVD Content Dashboard Report', 20, 30);
+      pdf.addImage(imgData, 'PNG', 20, 50, imgWidth, Math.min(imgHeight, pageHeight - 70));
+      
+      const date = new Date();
+      const filename = `tvd-dashboard-${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, '0')}${String(date.getDate()).padStart(2, '0')}.pdf`;
+      pdf.save(filename);
     });
 
-    // ---------- Init ----------
-    (async ()=>{
-      const ok = await loadFromSheet();
-      if(!ok){
-        // fallback ใช้ seed เพื่อให้หน้าใช้งานได้
-        buildFilters();
-        applyFilters();
-      }
-    })();
+    // Reset
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('platformFilter').value = '';
+      document.getElementById('designerFilter').value = '';
+      document.getElementById('statusFilter').value = '';
+      document.getElementById('categoryFilter').value = '';
+      document.getElementById('dateSourceFilter').value = 'Deadline';
+      document.getElementById('dateFrom').value = '';
+      document.getElementById('dateTo').value = '';
+      sortKey = 'row';
+      sortDir = 1;
+      applyFilters();
+    });
+
+    // Table sorting
+    document.querySelectorAll('th[data-sort]').forEach(th => {
+      th.addEventListener('click', () => {
+        const key = th.dataset.sort;
+        if (sortKey === key) {
+          sortDir *= -1;
+        } else {
+          sortKey = key;
+          sortDir = 1;
+        }
+        updateTable();
+      });
+    });
+
+    // Initialize
+    loadData();
   </script>
 </body>
-</html>
+</html>⚡ กำลังโหลด...';
+        const response = await fetch(CONFIG.SHEET_URL);
+        
+        if (!response.ok) throw new Error('Failed to fetch');
+        
+        const result = await response.json();
+        data = Array.isArray(result) ? result : (result.rows || []);
+        
+        statusEl.textContent = '
