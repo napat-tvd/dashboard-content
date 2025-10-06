@@ -458,7 +458,7 @@
 
         <div class="filter-group">
           <label class="filter-label">👤 Designer</label>
-          <select id="designerFilter">
+          <select id="designerFilter" style="display:none;">
             <option value="">ทุกดีไซเนอร์</option>
           </select>
         </div>
@@ -621,16 +621,14 @@
     let sortDir = 1;
     let charts = {};
 
-    // Seed data
+    // Seed data (ปรับให้ตรงกับโครงสร้างจริง)
     const seedData = [
-      {Platform:"FACEBOOK", Product:"SmartGuard เครื่องดักยุง", Type:"ออกแบบใหม่", Project:"SmartGenAir-Bar", Remark:"SideBar (vdo 9:16)", Date:"29/ก.ย./25", Deadline:"29/ก.ย./25", Designer:"ต้อง", Finish:"29/ก.ย./25", Approved:true},
-      {Platform:"FACEBOOK", Product:"Suklife น้ำมันอโวคาโด", Type:"ออกแบบใหม่", Project:"Suklife-Avocado", Remark:"Bar ข้าง", Date:"29/ก.ย./25", Deadline:"29/ก.ย./25", Designer:"เอ๊ะ", Finish:"29/ก.ย./25", Approved:true},
-      {Platform:"FACEBOOK", Product:"BSRB", Type:"แก้ไขงาน", Project:"AD-BSRB-ProBar", Remark:"Bar ข้าง", Date:"29/ก.ย./25", Deadline:"29/ก.ย./25", Designer:"ต้อง", Finish:"29/ก.ย./25", Approved:true},
-      {Platform:"SHOPEE", Product:"Sanshiro", Type:"Re Design", Project:"Feature-Sanshiro FT-010", Remark:"Product Feature", Date:"2/ต.ค./25", Deadline:"2/ต.ค./25", Designer:"ต้อง", Finish:"2/ต.ค./25", Approved:true},
-      {Platform:"FACEBOOK", Product:"เพรียวลม", Type:"ออกแบบใหม่", Project:"Ads-BAR-เพรียวลม", Remark:"Bar ข้าง A-B", Date:"3/ต.ค./25", Deadline:"3/ต.ค./25", Designer:"ต้อง", Finish:"3/ต.ค./25", Approved:true},
-      {Platform:"TIKTOK", Product:"อื่นๆ", Type:"Motion Graphic", Project:"Motion Tiktok 10.10", Remark:"Motion สำหรับ Live", Date:"10/ต.ค./25", Deadline:"10/ต.ค./25", Designer:"เอ๊ะ", Finish:"2/ต.ค./25", Approved:true},
-      {Platform:"FACEBOOK", Product:"Sanshiro", Type:"จองคิวถ่ายงาน", Project:"Sanshiro Script Ads FB", Remark:"หน้า 1", Date:"1/ต.ค./25", Deadline:"1/ต.ค./25", Designer:"", Finish:"", Approved:false},
-      {Platform:"FACEBOOK", Product:"เพรียวลม", Type:"จองคิวถ่ายงาน", Project:"เพรียวลม Script Ads FB", Remark:"หน้า 1", Date:"1/ต.ค./25", Deadline:"1/ต.ค./25", Designer:"", Finish:"", Approved:false}
+      {จำนวนชิ้น:1, Platform:"FACEBOOK", Product:"SmartGuard เครื่องดักยุง", Type:"ออกแบบใหม่", Project:"SmartGenAir-Bar", "Footage / Brief":"", Remark:"SideBar (vdo 9:16)", Assignor:"อาร์ม", Deadline:"29/ก.ย./25", Finish:"29/ก.ย./25", "Master / AW":"SmartGenAir-Bar", Status:"เสร็จแล้ว", Approved:true},
+      {จำนวนชิ้น:1, Platform:"FACEBOOK", Product:"Suklife น้ำมันอโวคาโด", Type:"ออกแบบใหม่", Project:"Suklife-Avocado", "Footage / Brief":"", Remark:"Bar ข้าง", Assignor:"เจ๋ง", Deadline:"29/ก.ย./25", Finish:"29/ก.ย./25", "Master / AW":"Suklife Bar", Status:"เสร็จแล้ว", Approved:true},
+      {จำนวนชิ้น:1, Platform:"FACEBOOK", Product:"BSRB", Type:"แก้ไขงาน", Project:"AD-BSRB-ProBar", "Footage / Brief":"", Remark:"Bar ข้าง", Assignor:"เจ๋ง", Deadline:"29/ก.ย./25", Finish:"29/ก.ย./25", "Master / AW":"AD-BSRB-ProBar", Status:"เสร็จแล้ว", Approved:true},
+      {จำนวนชิ้น:2, Platform:"SHOPEE", Product:"Sanshiro", Type:"Re Design", Project:"Feature-Sanshiro FT-010", "Footage / Brief":"", Remark:"Product Feature", Assignor:"ตู๋", Deadline:"2/ต.ค./25", Finish:"2/ต.ค./25", "Master / AW":"feature-Sanshiro", Status:"เสร็จแล้ว", Approved:true},
+      {จำนวนชิ้น:1, Platform:"TIKTOK", Product:"อื่นๆ", Type:"Motion Graphic", Project:"Motion Tiktok 10.10", "Footage / Brief":"", Remark:"Motion สำหรับ Live", Assignor:"Etc.", Deadline:"10/ต.ค./25", Finish:"2/ต.ค./25", "Master / AW":"Motion Tiktok", Status:"เสร็จแล้ว", Approved:true},
+      {จำนวนชิ้น:1, Platform:"FACEBOOK", Product:"Sanshiro", Type:"จองคิวถ่ายงาน", Project:"Sanshiro Script Ads FB", "Footage / Brief":"script plan", Remark:"หน้า 1", Assignor:"เจ๋ง", Deadline:"1/ต.ค./25", Finish:"", "Master / AW":"", Status:"เลยกำหนด", Approved:false}
     ];
 
     // Utilities
@@ -659,13 +657,25 @@
     }
 
     function computeStatus(row) {
+      // ตรวจสอบ Approved ก่อน
       if (String(row.Approved).toLowerCase() === 'true' || row.Approved === true) {
         return 'เสร็จแล้ว';
       }
+      
+      // ตรวจสอบ Finish
       if (row.Finish && String(row.Finish).trim() !== '') {
         return 'เสร็จแล้ว';
       }
       
+      // ตรวจสอบ Status ที่มีอยู่แล้วในข้อมูล
+      if (row.Status) {
+        const status = String(row.Status).trim();
+        if (status === 'เสร็จแล้ว' || status === 'อยู่ในกำหนด' || status === 'เลยกำหนด') {
+          return status;
+        }
+      }
+      
+      // คำนวณจาก Deadline
       const deadline = parseThaiDate(row.Deadline);
       if (deadline) {
         const today = new Date();
@@ -689,8 +699,8 @@
 
     function getCategory(row) {
       const text = [row.Type, row.Remark, row.Project].join(' ').toLowerCase();
-      if (text.includes('ออกแบบใหม่')) return 'artwork';
-      if (text.includes('ตัดคลิป')) return 'video';
+      if (text.includes('ออกแบบใหม่') || text.includes('re design')) return 'artwork';
+      if (text.includes('ตัดคลิป') || text.includes('video')) return 'video';
       if (text.includes('motion')) return 'motion';
       if (text.includes('จองคิว') || text.includes('script')) return 'script';
       return '';
@@ -751,10 +761,8 @@
     function applyFilters() {
       const search = document.getElementById('searchInput').value.toLowerCase();
       const platform = document.getElementById('platformFilter').value;
-      const designer = document.getElementById('designerFilter').value;
       const status = document.getElementById('statusFilter').value;
       const category = document.getElementById('categoryFilter').value;
-      const dateSource = document.getElementById('dateSourceFilter').value;
       const dateFrom = document.getElementById('dateFrom').value ? new Date(document.getElementById('dateFrom').value + 'T00:00:00') : null;
       const dateTo = document.getElementById('dateTo').value ? new Date(document.getElementById('dateTo').value + 'T23:59:59') : null;
 
@@ -763,20 +771,19 @@
         const rowCategory = getCategory(row);
         
         const matchSearch = !search || [
-          row.Project, row.Product, row.Remark, row.Type, row.Platform, row.Designer
+          row.Project, row.Product, row.Remark, row.Type, row.Platform, row['Master / AW']
         ].some(field => (field || '').toString().toLowerCase().includes(search));
         
         const matchPlatform = !platform || row.Platform === platform;
-        const matchDesigner = !designer || row.Designer === designer;
         const matchStatus = !status || rowStatus === status;
         const matchCategory = !category || rowCategory === category;
         
-        const dateVal = parseThaiDate(row[dateSource]);
+        const dateVal = parseThaiDate(row.Deadline);
         const matchDate = (!dateFrom && !dateTo) || (
           dateVal && (!dateFrom || dateVal >= dateFrom) && (!dateTo || dateVal <= dateTo)
         );
         
-        return matchSearch && matchPlatform && matchDesigner && matchStatus && matchCategory && matchDate;
+        return matchSearch && matchPlatform && matchStatus && matchCategory && matchDate;
       });
 
       updateKPIs();
