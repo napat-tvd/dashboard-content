@@ -599,7 +599,7 @@
           <label class="filter-label">📅 อิงวันที่</label>
           <select id="dateSourceFilter">
             <option value="Deadline">Deadline</option>
-            <option value="Date">Date</option>
+            <option value="Finish">Finish</option>
           </select>
         </div>
 
@@ -707,7 +707,7 @@
                 <th data-sort="Project">Project</th>
                 <th data-sort="Remark">Remark</th>
                 <th data-sort="Designer">Designer</th>
-                <th data-sort="Date">Date</th>
+                <th data-sort="Finish">Finish</th>
                 <th data-sort="Deadline">Deadline</th>
                 <th data-sort="Status">Status</th>
               </tr>
@@ -1227,7 +1227,7 @@
           <td>${row.Project || '-'}</td>
           <td>${row.Remark || '-'}</td>
           <td>${row.Designer || '-'}</td>
-          <td>${fmtDateDisplay(row.Date)}</td>
+          <td>${fmtDateDisplay(row.Finish)}</td>
           <td>${fmtDateDisplay(row.Deadline)}</td>
           <td><span class="badge badge-${status === 'เสร็จแล้ว' ? 'done' : status === 'อยู่ในกำหนด' ? 'ongoing' : status === 'เลยกำหนด' ? 'overdue' : 'pending'}">${status}</span></td>
         `;
