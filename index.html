@@ -26,6 +26,9 @@
       --danger: #ef4444;
       --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
       --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+      --glow-blue: 0 0 15px rgba(59, 130, 246, 0.5);
+      --glow-cyan: 0 0 15px rgba(6, 182, 212, 0.5);
+      --glow-purple: 0 0 15px rgba(139, 92, 246, 0.5);
     }
 
     body {
@@ -54,6 +57,24 @@
       display: flex;
       align-items: center;
       gap: 20px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+      transition: left 0.6s ease;
+    }
+
+    .header:hover::before {
+      left: 100%;
     }
 
     .logo {
@@ -67,6 +88,12 @@
       font-weight: 700;
       font-size: 24px;
       box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .logo:hover {
+      transform: scale(1.05);
+      box-shadow: var(--glow-blue);
     }
 
     .header-content h1 {
@@ -76,11 +103,25 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-bottom: 4px;
+      position: relative;
     }
 
     .header-subtitle {
       font-size: 14px;
       color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .version-badge {
+      background: rgba(139, 92, 246, 0.1);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent-purple);
     }
 
     .status-badge {
@@ -92,6 +133,11 @@
       font-size: 13px;
       color: var(--success);
       font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .status-badge:hover {
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
     }
 
     /* ====== Tabs ====== */
@@ -103,11 +149,30 @@
       border-radius: 12px;
       color: var(--text-secondary);
       cursor: pointer;
-      transition: all 0.3s;
+      transition: all 0.3s ease;
       font-weight: 500;
       font-size: 14px;
+      position: relative;
+      overflow: hidden;
     }
-    .nav-tab:hover { border-color: var(--border-hover); transform: translateY(-2px); }
+    .nav-tab::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transition: left 0.5s ease;
+    }
+    .nav-tab:hover::before {
+      left: 100%;
+    }
+    .nav-tab:hover { 
+      border-color: var(--border-hover); 
+      transform: translateY(-2px); 
+      box-shadow: var(--shadow);
+    }
     .nav-tab.active {
       background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
       color: white;
@@ -124,6 +189,11 @@
       padding: 24px;
       margin-bottom: 24px;
       box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+    }
+
+    .filters-panel:hover {
+      box-shadow: var(--shadow-lg);
     }
 
     .filters-grid {
@@ -151,7 +221,7 @@
       border-radius: 10px;
       color: var(--text-primary);
       font-size: 14px;
-      transition: all 0.3s;
+      transition: all 0.3s ease;
       outline: none;
     }
 
@@ -173,13 +243,40 @@
       font-size: 14px;
       font-weight: 500;
       cursor: pointer;
-      transition: all 0.3s;
+      transition: all 0.3s ease;
       white-space: nowrap;
+      position: relative;
+      overflow: hidden;
     }
 
-    button:hover { border-color: var(--border-hover); transform: translateY(-2px); box-shadow: var(--shadow); }
-    button.primary { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border: none; color: white; }
-    button.primary:hover { box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); }
+    button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transition: left 0.5s ease;
+    }
+
+    button:hover::before {
+      left: 100%;
+    }
+
+    button:hover { 
+      border-color: var(--border-hover); 
+      transform: translateY(-2px); 
+      box-shadow: var(--shadow);
+    }
+    button.primary { 
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); 
+      border: none; 
+      color: white; 
+    }
+    button.primary:hover { 
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4), var(--glow-blue);
+    }
 
     /* ====== KPI ====== */
     .kpi-grid { 
@@ -196,37 +293,165 @@
     }
     
     .kpi-card {
-      background: var(--bg-card); backdrop-filter: blur(12px); border: 1px solid var(--border);
-      border-radius: 16px; padding: 20px; box-shadow: var(--shadow); transition: all 0.3s;
-      position: relative; overflow: hidden;
+      background: var(--bg-card); 
+      backdrop-filter: blur(12px); 
+      border: 1px solid var(--border);
+      border-radius: 16px; 
+      padding: 20px; 
+      box-shadow: var(--shadow); 
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transform-origin: center;
+      animation: fadeInUp 0.6s ease backwards;
+      animation-delay: calc(var(--order, 0) * 100ms);
     }
-    .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan)); }
-    .kpi-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--border-hover); }
-    .kpi-label { font-size: 13px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; font-weight: 600; }
-    .kpi-value { font-size: 32px; font-weight: 700; background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .kpi-card::before { 
+      content: ''; 
+      position: absolute; 
+      top: 0; 
+      left: 0; 
+      right: 0; 
+      height: 3px; 
+      background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan)); 
+    }
+    .kpi-card:hover { 
+      transform: translateY(-4px) scale(1.02) rotate(-0.5deg);
+      box-shadow: var(--shadow-lg), 
+                  0 0 20px rgba(59, 130, 246, 0.2),
+                  0 0 40px rgba(59, 130, 246, 0.1);
+      border-color: var(--border-hover); 
+    }
+    .kpi-label { 
+      font-size: 13px; 
+      color: var(--text-secondary); 
+      text-transform: uppercase; 
+      letter-spacing: 0.5px; 
+      margin-bottom: 8px; 
+      font-weight: 600; 
+    }
+    .kpi-value { 
+      font-size: 32px; 
+      font-weight: 700; 
+      color: var(--accent-blue);
+      animation: countUp 1.5s ease-out backwards;
+      animation-delay: calc((var(--order, 0) * 100ms) + 300ms);
+    }
+    
+    /* NEW: เพิ่มการแสดงจำนวนชิ้นงาน Artwork */
+    .kpi-subvalue {
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-weight: 500;
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(59, 130, 246, 0.1);
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+    }
 
     /* ====== Charts ====== */
-    .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 16px; margin-bottom: 24px; }
-    .chart-card { background: var(--bg-card); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 16px; padding: 24px; box-shadow: var(--shadow); }
-    .chart-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; color: var(--text-primary); }
+    .charts-grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
+      gap: 16px; 
+      margin-bottom: 24px; 
+    }
+    .chart-card { 
+      background: var(--bg-card); 
+      backdrop-filter: blur(12px); 
+      border: 1px solid var(--border); 
+      border-radius: 16px; 
+      padding: 24px; 
+      box-shadow: var(--shadow); 
+      transition: all 0.3s ease;
+      position: relative;
+      /* ปรับขนาดกล่องกราฟให้พอดีกับข้อมูล */
+      height: 600px;
+      display: flex;
+      flex-direction: column;
+      animation: fadeInUp 0.8s ease backwards;
+      animation-delay: calc(var(--order, 0) * 200ms);
+    }
+    .chart-card:hover {
+      transform: translateY(-4px) rotate(-0.5deg);
+      box-shadow: var(--shadow-lg),
+                  0 0 25px rgba(59, 130, 246, 0.15),
+                  0 0 50px rgba(59, 130, 246, 0.1);
+    }
+    .chart-title { 
+      font-size: 16px; 
+      font-weight: 600; 
+      margin-bottom: 16px; 
+      color: var(--text-primary); 
+      flex-shrink: 0;
+    }
+    .chart-container {
+      flex: 1;
+      position: relative;
+    }
 
     /* ====== Table ====== */
-    .table-container { background: var(--bg-card); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow); }
+    .table-container { 
+      background: var(--bg-card); 
+      backdrop-filter: blur(12px); 
+      border: 1px solid var(--border); 
+      border-radius: 16px; 
+      overflow: hidden; 
+      box-shadow: var(--shadow); 
+      transition: all 0.3s ease;
+      animation: fadeInUp 1s ease backwards;
+      animation-delay: 800ms;
+    }
+    .table-container:hover {
+      box-shadow: var(--shadow-lg);
+    }
     .table-wrapper { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; min-width: 1200px; }
     thead { background: var(--bg-secondary); position: sticky; top: 0; z-index: 10; }
     th {
       padding: 16px; text-align: left; font-size: 12px; font-weight: 600; color: var(--text-secondary);
       text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border);
-      cursor: pointer; user-select: none;
+      cursor: pointer; user-select: none; transition: all 0.3s ease;
     }
-    th:hover { color: var(--accent-blue); }
-    td { padding: 16px; border-bottom: 1px solid var(--border); font-size: 14px; }
-    tbody tr { transition: background 0.2s; }
-    tbody tr:hover { background: rgba(59, 130, 246, 0.05); }
+    th:hover { 
+      color: var(--accent-blue); 
+      background: rgba(59, 130, 246, 0.05);
+    }
+    td { 
+      padding: 16px; 
+      border-bottom: 1px solid var(--border); 
+      font-size: 14px; 
+      transition: all 0.2s ease;
+    }
+    tbody tr { transition: background 0.2s ease; }
+    tbody tr:hover { 
+      background: rgba(59, 130, 246, 0.05); 
+      transform: translateX(4px);
+    }
+    tbody tr {
+      animation: fadeIn 0.5s ease backwards;
+      animation-delay: calc(var(--row-index, 0) * 50ms);
+    }
 
     /* ====== Badges ====== */
-    .badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; border: 1px solid; }
+    .badge { 
+      display: inline-flex; 
+      align-items: center; 
+      gap: 6px; 
+      padding: 6px 12px; 
+      border-radius: 999px; 
+      font-size: 12px; 
+      font-weight: 600; 
+      border: 1px solid; 
+      transition: all 0.3s ease;
+    }
+    .badge:hover {
+      transform: scale(1.05);
+    }
     .badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
     .badge-done    { background: rgba(16,185,129, .1); border-color: rgba(16,185,129,.3); color: var(--success); }
     .badge-done::before { background: var(--success); }
@@ -245,9 +470,46 @@
       font-size: 11px;
       font-weight: 600;
       color: var(--accent-purple);
+      transition: all 0.3s ease;
+    }
+
+    .platform-tag:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 8px rgba(139, 92, 246, 0.3);
     }
 
     .hidden { display: none; }
+
+    /* ====== Animation ====== */
+    @keyframes copyAnimation {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    .copy-animation {
+      animation: copyAnimation 0.5s ease;
+    }
+
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--success);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      box-shadow: var(--shadow-lg);
+      z-index: 1000;
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: all 0.3s ease;
+    }
+
+    .notification.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
 
     /* ====== Responsive ====== */
     @media (max-width: 768px) {
@@ -267,7 +529,10 @@
       <div class="logo">TV</div>
       <div class="header-content">
         <h1>TVD Content Report</h1>
-        <div class="header-subtitle">แดชบอร์ดเชื่อม Google Sheet • วิเคราะห์แบบเรียลไทม์</div>
+        <div class="header-subtitle">
+          แดชบอร์ดเชื่อม Google Sheet • วิเคราะห์แบบเรียลไทม์
+          <span class="version-badge">Ver.1.0.1 - แก้ไข Bug ตาราง - ปรับ UI บางส่วน</span>
+        </div>
       </div>
       <div class="status-badge" id="connectionStatus">⚡ กำลังเชื่อมต่อ...</div>
     </div>
@@ -295,7 +560,7 @@
 
         <div class="filter-group">
           <label class="filter-label">👤 Designer</label>
-          <select id="designerFilter" style="display:none;">
+          <select id="designerFilter">
             <option value="">ทุกดีไซเนอร์</option>
           </select>
         </div>
@@ -327,7 +592,6 @@
           <select id="dateSourceFilter">
             <option value="Deadline">Deadline</option>
             <option value="Date">Date</option>
-            <option value="MaxDate">MaxDate</option>
           </select>
         </div>
 
@@ -348,7 +612,8 @@
         <button id="btn30Days">30 วันล่าสุด</button>
         <button id="btnThisMonth">เดือนนี้</button>
         <button id="importBtn">📁 นำเข้า CSV</button>
-        <button id="exportBtn" class="primary">💾 ส่งออก PDF</button>
+        <button id="copyPNGBtn" class="primary">📋 คัดลอก PNG</button>
+        <button id="downloadPNGBtn" class="primary">💾 ดาวน์โหลด PNG</button>
         <button id="resetBtn">🔄 รีเซ็ต</button>
       </div>
     </div>
@@ -379,6 +644,8 @@
           <div class="kpi-card">
             <div class="kpi-label">🎨 Artwork</div>
             <div class="kpi-value" id="kpiArtwork">0</div>
+            <!-- NEW: เพิ่มการแสดงจำนวนชิ้นงาน Artwork -->
+            <div class="kpi-subvalue" id="kpiArtworkPieces">0 ชิ้น</div>
           </div>
           <div class="kpi-card">
             <div class="kpi-label">🎬 Video</div>
@@ -399,15 +666,21 @@
       <div class="charts-grid">
         <div class="chart-card">
           <div class="chart-title">สถานะงาน</div>
-          <canvas id="statusChart"></canvas>
+          <div class="chart-container">
+            <canvas id="statusChart"></canvas>
+          </div>
         </div>
         <div class="chart-card">
           <div class="chart-title">Platform</div>
-          <canvas id="platformChart"></canvas>
+          <div class="chart-container">
+            <canvas id="platformChart"></canvas>
+          </div>
         </div>
         <div class="chart-card">
           <div class="chart-title">ประเภทงาน</div>
-          <canvas id="typeChart"></canvas>
+          <div class="chart-container">
+            <canvas id="typeChart"></canvas>
+          </div>
         </div>
       </div>
     </div>
@@ -419,8 +692,7 @@
           <table>
             <thead>
               <tr>
-                <th data-sort="row">#</th>
-                <th data-sort="__qty">จำนวน</th><!-- เพิ่มคอลัมน์จำนวน -->
+                <th data-sort="__qty">จำนวน</th>
                 <th data-sort="Platform">Platform</th>
                 <th data-sort="Product">Product</th>
                 <th data-sort="Type">Type</th>
@@ -439,13 +711,15 @@
     </div>
   </div>
 
+  <!-- Notification -->
+  <div class="notification" id="notification"></div>
+
   <!-- Hidden input for CSV import -->
   <input type="file" id="csvFileInput" accept=".csv" style="display:none" />
 
   <!-- ====== Libraries ====== -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
   <!-- ====== App Script ====== -->
   <script>
@@ -533,7 +807,26 @@
       return `${day}/${month}/${year}`;
     }
 
+    // NEW: Function to split platforms
+    function splitPlatforms(platformStr) {
+      if (!platformStr) return [];
+      return platformStr.split(',').map(p => p.trim()).filter(Boolean);
+    }
+
+    // NEW: Function to get all unique platforms from data
+    function getAllPlatforms(data) {
+      const platforms = new Set();
+      data.forEach(row => {
+        const platformList = splitPlatforms(row.Platform);
+        platformList.forEach(p => platforms.add(p));
+      });
+      return Array.from(platforms).sort();
+    }
+
     function getUniqueValues(arr, key) {
+      if (key === 'Platform') {
+        return getAllPlatforms(arr);
+      }
       return Array.from(
         new Set(arr.map(item => (item?.[key] ?? '').toString().trim()).filter(Boolean))
       ).sort();
@@ -553,6 +846,13 @@
       const raw = row['จำนวนชิ้น'] ?? row['Quantity'] ?? row['qty'] ?? row['Qty'];
       const n = Number(String(raw ?? '').toString().replace(/[, ]/g,'').trim());
       return Number.isFinite(n) && n > 0 ? n : 0;
+    }
+
+    // NEW: ฟังก์ชันคำนวณจำนวนชิ้นงานทั้งหมดสำหรับ Artwork
+    function getArtworkPieces(data) {
+      return data
+        .filter(row => getCategory(row) === 'artwork')
+        .reduce((sum, row) => sum + getQty(row), 0);
     }
 
     function isMeaningfulRow(r){
@@ -590,6 +890,18 @@
       }
 
       return 'ยังไม่ได้กำหนด';
+    }
+
+    // Notification function
+    function showNotification(message, type = 'success') {
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
+      notification.style.background = type === 'success' ? 'var(--success)' : 'var(--danger)';
+      notification.classList.add('show');
+      
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000);
     }
 
     /* ==============================
@@ -652,441 +964,479 @@
         opt.textContent = val;
         designerSelect.appendChild(opt);
       });
-
-      if (designerSelect.children.length > 1) {
-        designerSelect.style.display = '';
-      }
     }
 
     function applyFilters() {
-      const search = document.getElementById('searchInput').value.toLowerCase();
-      const platform = document.getElementById('platformFilter').value;
-      const designer = document.getElementById('designerFilter').value;
-      const status = document.getElementById('statusFilter').value;
-      const category = document.getElementById('categoryFilter').value;
-      const dateKey = document.getElementById('dateSourceFilter').value || 'Deadline';
-
-      // Fix date filtering
-      let dateFrom = null;
-      let dateTo = null;
-      
-      const dfStr = document.getElementById('dateFrom').value;
-      const dtStr = document.getElementById('dateTo').value;
-      
-      if (dfStr) {
-        dateFrom = new Date(dfStr);
-        dateFrom.setHours(0, 0, 0, 0);
-      }
-      
-      if (dtStr) {
-        dateTo = new Date(dtStr);
-        dateTo.setHours(23, 59, 59, 999);
-      }
-
-      const useDateRange = !!(dateFrom || dateTo);
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const platformFilter = document.getElementById('platformFilter').value;
+      const designerFilter = document.getElementById('designerFilter').value;
+      const statusFilter = document.getElementById('statusFilter').value;
+      const categoryFilter = document.getElementById('categoryFilter').value;
+      const dateSource = document.getElementById('dateSourceFilter').value;
+      const dateFrom = document.getElementById('dateFrom').value;
+      const dateTo = document.getElementById('dateTo').value;
 
       filteredData = data.filter(row => {
-        const rowStatus = computeStatus(row);
-        const rowCategory = getCategory(row);
-
-        const matchSearch = !search || [
-          row.Project, row.Product, row.Remark, row.Type, row.Platform
-        ].some(field => (field || '').toString().toLowerCase().includes(search));
-
-        const matchPlatform = !platform || row.Platform === platform;
-        const matchDesigner = !designer || row.Designer === designer;
-        const matchStatus = !status || rowStatus === status;
-        const matchCategory = !category || rowCategory === category;
-
-        // Improved date filtering
-        let matchDate = true;
-        if (useDateRange) {
-          const baseDate = parseThaiDate(row[dateKey]);
-          if (!baseDate) return false;
-
-          if (dateFrom && baseDate < dateFrom) return false;
-          if (dateTo && baseDate > dateTo) return false;
+        // Search
+        if (searchTerm) {
+          const searchable = [
+            row.Project, row.Product, row.Remark, row.Type, row.Designer
+          ].join(' ').toLowerCase();
+          if (!searchable.includes(searchTerm)) return false;
         }
 
-        return matchSearch && matchPlatform && matchDesigner && matchStatus && matchCategory && matchDate;
+        // Platform - NEW: Check if any platform in the list matches
+        if (platformFilter) {
+          const platforms = splitPlatforms(row.Platform);
+          if (!platforms.includes(platformFilter)) return false;
+        }
+
+        // Designer
+        if (designerFilter && row.Designer !== designerFilter) return false;
+
+        // Status
+        const status = computeStatus(row);
+        if (statusFilter && status !== statusFilter) return false;
+
+        // Category
+        if (categoryFilter) {
+          const category = getCategory(row);
+          if (category !== categoryFilter) return false;
+        }
+
+        // Date range
+        if (dateFrom || dateTo) {
+          const dateField = row[dateSource];
+          const date = parseThaiDate(dateField);
+          if (!date) return false;
+
+          const from = dateFrom ? new Date(dateFrom) : null;
+          const to = dateTo ? new Date(dateTo) : null;
+
+          if (from && date < from) return false;
+          if (to && date > to) return false;
+        }
+
+        return true;
       });
 
-      updateKPIs();
+      updateUI();
+    }
+
+    /* ==============================
+       SORT
+    =============================== */
+    function sortData() {
+      if (!sortKey) return;
+
+      filteredData.sort((a, b) => {
+        let valA = a[sortKey] ?? '';
+        let valB = b[sortKey] ?? '';
+
+        // Handle platform sorting - NEW: Sort by first platform in the list
+        if (sortKey === 'Platform') {
+          const platformsA = splitPlatforms(valA);
+          const platformsB = splitPlatforms(valB);
+          valA = platformsA.length > 0 ? platformsA[0] : '';
+          valB = platformsB.length > 0 ? platformsB[0] : '';
+        }
+
+        // Handle date sorting
+        if (['Date', 'Deadline', 'Finish'].includes(sortKey)) {
+          const dateA = parseThaiDate(valA);
+          const dateB = parseThaiDate(valB);
+          if (dateA && dateB) return sortDir * (dateA - dateB);
+          if (dateA) return -1 * sortDir;
+          if (dateB) return 1 * sortDir;
+          return 0;
+        }
+
+        // Handle numeric sorting
+        if (sortKey === '__qty') {
+          const qtyA = getQty(a);
+          const qtyB = getQty(b);
+          return sortDir * (qtyA - qtyB);
+        }
+
+        // Default string sorting
+        return sortDir * String(valA).localeCompare(String(valB), 'th');
+      });
+    }
+
+    /* ==============================
+       UPDATE UI
+    =============================== */
+    function updateUI() {
+      sortData();
+      updateKPI();
       updateCharts();
       updateTable();
     }
 
-    /* ==============================
-       KPI
-    =============================== */
-    function updateKPIs() {
+    function updateKPI() {
+      const total = filteredData.length;
       const done = filteredData.filter(r => computeStatus(r) === 'เสร็จแล้ว').length;
       const ongoing = filteredData.filter(r => computeStatus(r) === 'อยู่ในกำหนด').length;
       const overdue = filteredData.filter(r => computeStatus(r) === 'เลยกำหนด').length;
 
-      document.getElementById('kpiTotal').textContent   = filteredData.length;
-      document.getElementById('kpiDone').textContent    = done;
+      const artwork = filteredData.filter(r => getCategory(r) === 'artwork').length;
+      const video = filteredData.filter(r => getCategory(r) === 'video').length;
+      const motion = filteredData.filter(r => getCategory(r) === 'motion').length;
+      const script = filteredData.filter(r => getCategory(r) === 'script').length;
+
+      document.getElementById('kpiTotal').textContent = total;
+      document.getElementById('kpiDone').textContent = done;
       document.getElementById('kpiOngoing').textContent = ongoing;
       document.getElementById('kpiOverdue').textContent = overdue;
-
-      // Artwork: แสดง "จำนวนงาน • จำนวนภาพทั้งหมด"
-      const isArtwork = r => (r.Type || '').toLowerCase().includes('ออกแบบใหม่') || (r.Type || '').toLowerCase().includes('re design');
-      const isVideo   = r => (r.Type || '').toLowerCase().includes('ตัดคลิป') || (r.Type || '').toLowerCase().includes('video');
-      const isMotion  = r => (r.Type || '').toLowerCase().includes('motion');
-      const isScript  = r => (r.Type || '').toLowerCase().includes('จองคิว') || (r.Type || '').toLowerCase().includes('script');
-
-      const artworkRows   = filteredData.filter(isArtwork);
-      const artworkCount  = artworkRows.length;
-      const artworkImages = artworkRows.reduce((sum,r)=> sum + getQty(r), 0);
-
-      const videoCount  = filteredData.filter(isVideo).length;
-      const motionCount = filteredData.filter(isMotion).length;
-      const scriptCount = filteredData.filter(isScript).length;
-
-      // แสดงสองบรรทัดอ่านง่าย
-      document.getElementById('kpiArtwork').innerHTML = `${artworkCount}<div style="font-size:12px;color:#9ca3af">ภาพทั้งหมด ${artworkImages} รูป</div>`;
-      document.getElementById('kpiVideo').textContent   = String(videoCount);
-      document.getElementById('kpiMotion').textContent  = String(motionCount);
-      document.getElementById('kpiScript').textContent  = String(scriptCount);
+      document.getElementById('kpiArtwork').textContent = artwork;
+      document.getElementById('kpiVideo').textContent = video;
+      document.getElementById('kpiMotion').textContent = motion;
+      document.getElementById('kpiScript').textContent = script;
+      
+      // NEW: แสดงจำนวนชิ้นงาน Artwork
+      const artworkPieces = getArtworkPieces(filteredData);
+      document.getElementById('kpiArtworkPieces').textContent = `${artworkPieces} ชิ้น`;
     }
 
-    /* ==============================
-       CHARTS
-    =============================== */
     function updateCharts() {
-      // ----- Status Chart -----
-      const statusLabels = ['เสร็จแล้ว', 'อยู่ในกำหนด', 'เลยกำหนด', 'ยังไม่ได้กำหนด'];
-      const statusData = statusLabels.map(label =>
-        filteredData.filter(r => computeStatus(r) === label).length
-      );
+      // Status chart
+      const statusCounts = {
+        'เสร็จแล้ว': 0,
+        'อยู่ในกำหนด': 0,
+        'เลยกำหนด': 0,
+        'ยังไม่ได้กำหนด': 0
+      };
 
-      if (!charts.status) {
-        charts.status = new Chart(document.getElementById('statusChart'), {
-          type: 'doughnut',
-          data: {
-            labels: statusLabels,
-            datasets: [{
-              data: statusData,
-              backgroundColor: ['#10b981', '#3b82f6', '#ef4444', '#f59e0b'],
-              borderWidth: 0
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-              legend: { position: 'bottom', labels: { color: '#e8eaf0', padding: 15 } }
-            },
-            cutout: '65%'
-          }
+      filteredData.forEach(row => {
+        const status = computeStatus(row);
+        statusCounts[status]++;
+      });
+
+      // Platform chart - NEW: Count each platform separately
+      const platformCounts = {};
+      filteredData.forEach(row => {
+        const platforms = splitPlatforms(row.Platform);
+        platforms.forEach(p => {
+          platformCounts[p] = (platformCounts[p] || 0) + 1;
         });
-      } else {
-        charts.status.data.datasets[0].data = statusData;
-        charts.status.update();
-      }
+      });
 
-      // ----- Platform Chart -----
-      const platforms = getUniqueValues(filteredData, 'Platform');
-      const platformData = platforms.map(p => filteredData.filter(r => r.Platform === p).length);
+      // Type chart
+      const typeCounts = {
+        'artwork': 0,
+        'video': 0,
+        'motion': 0,
+        'script': 0
+      };
 
-      if (!charts.platform) {
-        charts.platform = new Chart(document.getElementById('platformChart'), {
-          type: 'bar',
-          data: {
-            labels: platforms,
-            datasets: [{
-              label: 'จำนวนงาน',
-              data: platformData,
-              backgroundColor: '#3b82f6',
-              borderRadius: 8
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: { legend: { display: false } },
-            scales: {
-              y: { beginAtZero: true, ticks: { color: '#9ca3af' }, grid: { color: 'rgba(100, 150, 255, 0.1)' } },
-              x: { ticks: { color: '#9ca3af' }, grid: { display: false } }
-            }
-          }
-        });
-      } else {
-        charts.platform.data.labels = platforms;
-        charts.platform.data.datasets[0].data = platformData;
-        charts.platform.update();
-      }
+      filteredData.forEach(row => {
+        const category = getCategory(row);
+        if (category && typeCounts.hasOwnProperty(category)) {
+          typeCounts[category]++;
+        }
+      });
 
-      // ----- Type Chart -----
-      const typeLabels = ['Artwork', 'Video', 'Motion', 'Script'];
-      const typeKeywords = ['ออกแบบใหม่|re design', 'ตัดคลิป|video', 'motion', 'จองคิว|script'];
-      const typeData = typeKeywords.map(regex =>
-        filteredData.filter(r => new RegExp(regex, 'i').test((r.Type || ''))).length
-      );
-
-      if (!charts.type) {
-        charts.type = new Chart(document.getElementById('typeChart'), {
-          type: 'bar',
-          data: {
-            labels: typeLabels,
-            datasets: [{
-              label: 'จำนวนงาน',
-              data: typeData,
-              backgroundColor: '#8b5cf6',
-              borderRadius: 8
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: { legend: { display: false } },
-            scales: {
-              y: { beginAtZero: true, ticks: { color: '#9ca3af' }, grid: { color: 'rgba(100, 150, 255, 0.1)' } },
-              x: { ticks: { color: '#9ca3af' }, grid: { display: false } }
-            }
-          }
-        });
-      } else {
-        charts.type.data.datasets[0].data = typeData;
-        charts.type.update();
-      }
+      // Update or create charts
+      updateChart('statusChart', Object.keys(statusCounts), Object.values(statusCounts), ['#10b981', '#3b82f6', '#ef4444', '#6b7280']);
+      updateChart('platformChart', Object.keys(platformCounts), Object.values(platformCounts), ['#8b5cf6', '#06b6d4', '#f59e0b', '#3b82f6', '#10b981', '#ef4444']);
+      updateChart('typeChart', ['Artwork', 'Video', 'Motion', 'Script'], Object.values(typeCounts), ['#8b5cf6', '#06b6d4', '#3b82f6', '#10b981']);
     }
 
-    /* ==============================
-       TABLE
-    =============================== */
+    function updateChart(canvasId, labels, data, colors) {
+      const ctx = document.getElementById(canvasId).getContext('2d');
+
+      if (charts[canvasId]) {
+        charts[canvasId].destroy();
+      }
+
+      charts[canvasId] = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: data,
+            backgroundColor: colors,
+            borderWidth: 0,
+            hoverOffset: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                color: '#e8eaf0',
+                font: { size: 12 }
+              }
+            }
+          },
+          cutout: '65%',
+          animation: {
+            animateScale: true,
+            animateRotate: true,
+            delay: (context) => context.dataIndex * 100
+          },
+          hover: {
+            mode: 'nearest',
+            intersect: true,
+            animationDuration: 200
+          },
+          transitions: {
+            active: {
+              animation: {
+                duration: 300
+              }
+            }
+          }
+        }
+      });
+    }
+
     function updateTable() {
       const tbody = document.getElementById('tableBody');
       tbody.innerHTML = '';
 
-      const sorted = [...filteredData]
-        .map((row, idx) => ({ ...row, _idx: idx + 1, __qty: getQty(row) }))
-        .sort((a, b) => {
-          if (sortKey === 'row') return sortDir * (a._idx - b._idx);
-
-          // sort by จำนวน
-          if (sortKey === '__qty'){
-            if (a.__qty === b.__qty) return 0;
-            return sortDir * (a.__qty > b.__qty ? 1 : -1);
-          }
-
-          let valA = a[sortKey];
-          let valB = b[sortKey];
-
-          if (sortKey === 'Status') {
-            valA = computeStatus(a);
-            valB = computeStatus(b);
-          }
-
-          if (['Deadline', 'Date', 'MaxDate'].includes(sortKey)) {
-            valA = parseThaiDate(valA);
-            valB = parseThaiDate(valB);
-          } else {
-            valA = (valA || '').toString().toLowerCase();
-            valB = (valB || '').toString().toLowerCase();
-          }
-
-          if (valA === valB) return 0;
-          if (!valA) return 1;
-          if (!valB) return -1;
-          return sortDir * (valA > valB ? 1 : -1);
-        });
-
-      sorted.forEach(row => {
-        const status = computeStatus(row);
-
+      filteredData.forEach((row, index) => {
         const tr = document.createElement('tr');
+        tr.style.setProperty('--row-index', index + 1);
+        const status = computeStatus(row);
+        const category = getCategory(row);
+        const qty = getQty(row);
+
+        // NEW: Render platforms as separate tags
+        const platforms = splitPlatforms(row.Platform);
+        const platformTags = platforms.map(p => 
+          `<span class="platform-tag">${p}</span>`
+        ).join(' ');
+
         tr.innerHTML = `
-          <td>${row._idx}</td>
-          <td>${row.__qty || '-'}</td>
-          <td><span class="platform-tag">${row.Platform || '-'}</span></td>
+          <td>${qty}</td>
+          <td>${platformTags}</td>
           <td>${row.Product || '-'}</td>
           <td>${row.Type || '-'}</td>
-          <td title="${row.Project || ''}">${(row.Project || '-').substring(0, 40)}${(row.Project || '').length > 40 ? '...' : ''}</td>
+          <td>${row.Project || '-'}</td>
           <td>${row.Remark || '-'}</td>
           <td>${row.Designer || '-'}</td>
           <td>${fmtDateDisplay(row.Date)}</td>
           <td>${fmtDateDisplay(row.Deadline)}</td>
-          <td>
-            <span class="badge ${
-              {
-                'เสร็จแล้ว': 'badge-done',
-                'อยู่ในกำหนด': 'badge-ongoing',
-                'เลยกำหนด': 'badge-overdue',
-                'ยังไม่ได้กำหนด': 'badge-pending'
-              }[status] || 'badge-pending'
-            }">${status}</span>
-          </td>
+          <td><span class="badge badge-${status === 'เสร็จแล้ว' ? 'done' : status === 'อยู่ในกำหนด' ? 'ongoing' : status === 'เลยกำหนด' ? 'overdue' : 'pending'}">${status}</span></td>
         `;
         tbody.appendChild(tr);
       });
     }
 
     /* ==============================
-       EVENTS
+       PNG EXPORT FUNCTIONS
     =============================== */
-    // Tabs
-    document.querySelectorAll('.nav-tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        const page = tab.dataset.page;
-        document.getElementById('dashboardView').classList.toggle('hidden', page !== 'dashboard');
-        document.getElementById('detailsView').classList.toggle('hidden', page !== 'details');
+    async function capturePNG(download = false) {
+      const button = download ? document.getElementById('downloadPNGBtn') : document.getElementById('copyPNGBtn');
+      button.classList.add('copy-animation');
+      
+      try {
+        const isDashboard = !document.getElementById('dashboardView').classList.contains('hidden');
+        const elementToCapture = isDashboard ? document.getElementById('dashboardView') : document.getElementById('detailsView');
+        
+        // สร้าง wrapper div สำหรับเพิ่มพื้นที่ว่างรอบๆ
+        const wrapper = document.createElement('div');
+        wrapper.style.padding = '100px';
+        wrapper.style.background = 'radial-gradient(ellipse at top, #1e293b 0%, var(--bg-primary) 50%)';
+        wrapper.appendChild(elementToCapture.cloneNode(true));
+        document.body.appendChild(wrapper);
+        
+        const canvas = await html2canvas(wrapper, {
+          backgroundColor: '#0a0e1a',
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          logging: false
+        });
+        
+        // ลบ wrapper ออกหลังจาก capture เสร็จ
+        document.body.removeChild(wrapper);
+        
+        if (download) {
+          // Download PNG
+          const link = document.createElement('a');
+          const timestamp = new Date().toISOString().slice(0, 10);
+          const type = isDashboard ? 'dashboard' : 'details';
+          link.download = `tvd-report-${type}-${timestamp}.png`;
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+          showNotification('ดาวน์โหลด PNG สำเร็จ!', 'success');
+        } else {
+          // Copy to clipboard
+          canvas.toBlob(async (blob) => {
+            try {
+              await navigator.clipboard.write([
+                new ClipboardItem({
+                  'image/png': blob
+                })
+              ]);
+              showNotification('คัดลอกภาพไปยังคลิปบอร์ดแล้ว!', 'success');
+            } catch (err) {
+              console.error('Failed to copy image: ', err);
+              showNotification('ไม่สามารถคัดลอกภาพได้', 'error');
+            }
+          });
+        }
+      } catch (error) {
+        console.error('Error capturing PNG:', error);
+        showNotification('เกิดข้อผิดพลาดในการสร้างภาพ', 'error');
+      } finally {
+        setTimeout(() => {
+          button.classList.remove('copy-animation');
+        }, 500);
+      }
+    }
+
+    /* ==============================
+       EVENT LISTENERS
+    =============================== */
+    function initEvents() {
+      // Tabs
+      document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          const page = tab.dataset.page;
+          document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          document.getElementById('dashboardView').classList.toggle('hidden', page !== 'dashboard');
+          document.getElementById('detailsView').classList.toggle('hidden', page !== 'details');
+        });
       });
-    });
 
-    // Filters
-    document.getElementById('searchInput').addEventListener('input', applyFilters);
-    document.getElementById('platformFilter').addEventListener('change', applyFilters);
-    document.getElementById('designerFilter').addEventListener('change', applyFilters);
-    document.getElementById('statusFilter').addEventListener('change', applyFilters);
-    document.getElementById('categoryFilter').addEventListener('change', applyFilters);
-    document.getElementById('dateSourceFilter').addEventListener('change', applyFilters);
-    document.getElementById('dateFrom').addEventListener('change', applyFilters);
-    document.getElementById('dateTo').addEventListener('change', applyFilters);
+      // Filters
+      document.querySelectorAll('input, select').forEach(el => {
+        el.addEventListener('change', applyFilters);
+      });
+      document.getElementById('searchInput').addEventListener('input', applyFilters);
 
-    // Quick ranges
-    document.getElementById('btn7Days').addEventListener('click', () => {
-      const today = new Date();
-      const from = new Date(today);
-      from.setDate(from.getDate() - 6);
-      document.getElementById('dateFrom').value = from.toISOString().split('T')[0];
-      document.getElementById('dateTo').value = today.toISOString().split('T')[0];
-      applyFilters();
-    });
+      // Sort
+      document.querySelectorAll('th[data-sort]').forEach(th => {
+        th.addEventListener('click', () => {
+          const key = th.dataset.sort;
+          if (sortKey === key) {
+            sortDir *= -1;
+          } else {
+            sortKey = key;
+            sortDir = 1;
+          }
+          updateUI();
+        });
+      });
 
-    document.getElementById('btn30Days').addEventListener('click', () => {
-      const today = new Date();
-      const from = new Date(today);
-      from.setDate(from.getDate() - 29);
-      document.getElementById('dateFrom').value = from.toISOString().split('T')[0];
-      document.getElementById('dateTo').value = today.toISOString().split('T')[0];
-      applyFilters();
-    });
+      // Date shortcuts
+      document.getElementById('btn7Days').addEventListener('click', () => {
+        const to = new Date();
+        const from = new Date();
+        from.setDate(to.getDate() - 7);
+        document.getElementById('dateFrom').value = from.toISOString().split('T')[0];
+        document.getElementById('dateTo').value = to.toISOString().split('T')[0];
+        applyFilters();
+      });
 
-    document.getElementById('btnThisMonth').addEventListener('click', () => {
-      const now = new Date();
-      const first = new Date(now.getFullYear(), now.getMonth(), 1);
-      const last  = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-      document.getElementById('dateFrom').value = first.toISOString().split( 'T')[0];
-      document.getElementById('dateTo').value   = last.toISOString().split('T')[0];
-      applyFilters();
-    });
+      document.getElementById('btn30Days').addEventListener('click', () => {
+        const to = new Date();
+        const from = new Date();
+        from.setDate(to.getDate() - 30);
+        document.getElementById('dateFrom').value = from.toISOString().split('T')[0];
+        document.getElementById('dateTo').value = to.toISOString().split('T')[0];
+        applyFilters();
+      });
 
-    // CSV Import
-    document.getElementById('importBtn').addEventListener('click', () => {
-      document.getElementById('csvFileInput').click();
-    });
+      document.getElementById('btnThisMonth').addEventListener('click', () => {
+        const now = new Date();
+        const from = new Date(now.getFullYear(), now.getMonth(), 1);
+        const to = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        document.getElementById('dateFrom').value = from.toISOString().split('T')[0];
+        document.getElementById('dateTo').value = to.toISOString().split('T')[0];
+        applyFilters();
+      });
 
-    document.getElementById('csvFileInput').addEventListener('change', (e) => {
+      document.getElementById('resetBtn').addEventListener('click', () => {
+        document.querySelectorAll('input, select').forEach(el => {
+          if (el.type === 'date') el.value = '';
+          else if (el.tagName === 'SELECT') el.selectedIndex = 0;
+          else el.value = '';
+        });
+        applyFilters();
+      });
+
+      // Import CSV
+      document.getElementById('importBtn').addEventListener('click', () => {
+        document.getElementById('csvFileInput').click();
+      });
+
+      document.getElementById('csvFileInput').addEventListener('change', handleCSVImport);
+
+      // PNG Export
+      document.getElementById('copyPNGBtn').addEventListener('click', () => capturePNG(false));
+      document.getElementById('downloadPNGBtn').addEventListener('click', () => capturePNG(true));
+    }
+
+    function handleCSVImport(e) {
       const file = e.target.files[0];
       if (!file) return;
 
       const reader = new FileReader();
-      reader.onload = (event) => {
-        const text = event.target.result;
-        const rows = text.split(/\r?\n/).map(row => row.split(','));
-        const headers = rows[0] || [];
+      reader.onload = function(event) {
+        const csvText = event.target.result;
+        const rows = parseCSV(csvText);
+        
+        // Simple mapping - adjust as needed
+        const mappedData = rows.map(row => ({
+          Platform: row['Platform'],
+          Product: row['Product'],
+          Type: row['Type'],
+          Project: row['Project'],
+          Remark: row['Remark'],
+          Designer: row['Designer'],
+          Date: row['Date'],
+          Deadline: row['Deadline'],
+          Status: row['Status'],
+          Approved: toBool(row['Approved']),
+          Finish: row['Finish']
+        }));
 
-        data = rows.slice(1).filter(row => row.filter(Boolean).length).map(row => {
-          const obj = {};
-          headers.forEach((header, idx) => {
-            obj[(header || '').trim()] = row[idx] ? row[idx].trim() : '';
-          });
-          return obj;
-        });
-
-        // Normalize + filter empty after CSV as well
-        data = data.map(r => ({ ...r, Approved: toBool(r.Approved) })).filter(isMeaningfulRow);
-
+        data = mappedData.filter(isMeaningfulRow);
         buildFilters();
         applyFilters();
-
-        const statusEl = document.getElementById('connectionStatus');
-        statusEl.textContent = '📁 ใช้ไฟล์ CSV';
-        statusEl.style.background = 'rgba(59, 130, 246, 0.1)';
-        statusEl.style.borderColor = 'rgba(59, 130, 246, 0.3)';
-        statusEl.style.color = 'var(--accent-blue)';
+        showNotification(`นำเข้าข้อมูลสำเร็จ ${data.length} แถว`, 'success');
       };
-
       reader.readAsText(file);
       e.target.value = '';
-    });
+    }
 
-    // PDF Export
-    document.getElementById('exportBtn').addEventListener('click', async () => {
-      try {
-        const dashboard = document.getElementById('dashboardView');
-        dashboard.style.background = '#0a0e1a'; // Force background for PDF
-        
-        const canvas = await html2canvas(dashboard, {
-          scale: 2,
-          backgroundColor: '#0a0e1a',
-          logging: false,
-          allowTaint: true,
-          useCORS: true,
-          scrollY: -window.scrollY // Fix scrolling issues
+    function parseCSV(text) {
+      const lines = text.split('\n').map(line => line.trim()).filter(Boolean);
+      if (lines.length < 2) return [];
+
+      const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+      const result = [];
+
+      for (let i = 1; i < lines.length; i++) {
+        const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+        const row = {};
+        headers.forEach((header, index) => {
+          row[header] = values[index] || '';
         });
-
-        const imgData = canvas.toDataURL('image/png');
-        const { jsPDF } = window.jspdf;
-        
-        if (!jsPDF) {
-          throw new Error('jsPDF not loaded');
-        }
-
-        const pdf = new jsPDF('landscape', 'pt', 'a4');
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        const pageHeight = pdf.internal.pageSize.getHeight();
-        const imgWidth = pageWidth - 40;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-        pdf.text('TVD Content Dashboard Report', 20, 30);
-        pdf.addImage(imgData, 'PNG', 20, 50, imgWidth, Math.min(imgHeight, pageHeight - 70));
-
-        const d = new Date();
-        const filename = `tvd-dashboard-${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}.pdf`;
-        pdf.save(filename);
-
-      } catch (error) {
-        console.error('PDF Export error:', error);
-        alert('ไม่สามารถสร้าง PDF ได้ กรุณาลองใหม่อีกครั้ง');
+        result.push(row);
       }
-    });
 
-    // Sorting
-    document.querySelectorAll('th[data-sort]').forEach(th => {
-      th.addEventListener('click', () => {
-        const key = th.dataset.sort;
-        if (sortKey === key) { sortDir *= -1; }
-        else { sortKey = key; sortDir = 1; }
-        updateTable();
-      });
-    });
+      return result;
+    }
 
-    // Reset button
-    document.getElementById('resetBtn').addEventListener('click', () => {
-      // Clear search
-      document.getElementById('searchInput').value = '';
-      
-      // Reset dropdowns
-      document.getElementById('platformFilter').value = '';
-      document.getElementById('designerFilter').value = '';
-      document.getElementById('statusFilter').value = '';
-      document.getElementById('categoryFilter').value = '';
-      document.getElementById('dateSourceFilter').value = 'Deadline';
-      
-      // Clear date range
-      document.getElementById('dateFrom').value = '';
-      document.getElementById('dateTo').value = '';
-
-      // Reload data and reapply filters
+    /* ==============================
+       INIT
+    =============================== */
+    function init() {
+      initEvents();
       loadData();
-    });
+    }
 
-    // Init
-    document.addEventListener('DOMContentLoaded', loadData);
+    // Start the app
+    document.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
 </html>

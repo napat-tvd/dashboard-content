@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TVD Content Dashboard</title>
+
+  <style>
+    /* ====== Base & Theme ====== */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #0a0e1a;
+      --bg-secondary: #0f1420;
+      --bg-card: linear-gradient(145deg, rgba(20, 28, 50, 0.8), rgba(15, 20, 35, 0.6));
+      --border: rgba(100, 150, 255, 0.15);
+      --border-hover: rgba(100, 150, 255, 0.3);
+      --text-primary: #e8eaf0;
+      --text-secondary: #9ca3af;
+      --text-muted: #6b7280;
+      --accent-blue: #3b82f6;
+      --accent-cyan: #06b6d4;
+      --accent-purple: #8b5cf6;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+    }
+
+    body {
+      font-family: 'Inter', 'Noto Sans Thai', system-ui, -apple-system, sans-serif;
+      background: radial-gradient(ellipse at top, #1e293b 0%, var(--bg-primary) 50%);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    /* ====== Header ====== */
+    .header {
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px 32px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .logo {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 24px;
+      box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
+    }
+
+    .header-content h1 {
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 4px;
+    }
+
+    .header-subtitle {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .status-badge {
+      margin-left: auto;
+      padding: 8px 16px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 999px;
+      font-size: 13px;
+      color: var(--success);
+      font-weight: 500;
+    }
+
+    /* ====== Tabs ====== */
+    .nav-tabs { display: flex; gap: 8px; margin-bottom: 24px; }
+    .nav-tab {
+      padding: 12px 24px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 500;
+      font-size: 14px;
+    }
+    .nav-tab:hover { border-color: var(--border-hover); transform: translateY(-2px); }
+    .nav-tab.active {
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+      color: white;
+      border-color: transparent;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    }
+
+    /* ====== Filters ====== */
+    .filters-panel {
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .filters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .filter-group { display: flex; flex-direction: column; gap: 8px; }
+
+    .filter-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-size: 14px;
+      transition: all 0.3s;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .date-range { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .action-buttons { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    button {
+      padding: 12px 20px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+      white-space: nowrap;
+    }
+
+    button:hover { border-color: var(--border-hover); transform: translateY(-2px); box-shadow: var(--shadow); }
+    button.primary { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); border: none; color: white; }
+    button.primary:hover { box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); }
+
+    /* ====== KPI ====== */
+    .kpi-grid { 
+      display: grid;
+      gap: 16px;
+      margin-bottom: 24px;
+      grid-template-rows: auto auto;
+    }
+    
+    .kpi-row {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .kpi-card {
+      background: var(--bg-card); backdrop-filter: blur(12px); border: 1px solid var(--border);
+      border-radius: 16px; padding: 20px; box-shadow: var(--shadow); transition: all 0.3s;
+      position: relative; overflow: hidden;
+    }
+    .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan)); }
+    .kpi-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--border-hover); }
+    .kpi-label { font-size: 13px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; font-weight: 600; }
+    .kpi-value { font-size: 32px; font-weight: 700; background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+    /* ====== Charts ====== */
+    .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .chart-card { background: var(--bg-card); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 16px; padding: 24px; box-shadow: var(--shadow); }
+    .chart-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; color: var(--text-primary); }
+
+    /* ====== Table ====== */
+    .table-container { background: var(--bg-card); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow); }
+    .table-wrapper { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 1200px; }
+    thead { background: var(--bg-secondary); position: sticky; top: 0; z-index: 10; }
+    th {
+      padding: 16px; text-align: left; font-size: 12px; font-weight: 600; color: var(--text-secondary);
+      text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border);
+      cursor: pointer; user-select: none;
+    }
+    th:hover { color: var(--accent-blue); }
+    td { padding: 16px; border-bottom: 1px solid var(--border); font-size: 14px; }
+    tbody tr { transition: background 0.2s; }
+    tbody tr:hover { background: rgba(59, 130, 246, 0.05); }
+
+    /* ====== Badges ====== */
+    .badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; border: 1px solid; }
+    .badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+    .badge-done    { background: rgba(16,185,129, .1); border-color: rgba(16,185,129,.3); color: var(--success); }
+    .badge-done::before { background: var(--success); }
+    .badge-ongoing { background: rgba(59,130,246, .1); border-color: rgba(59,130,246,.3); color: var(--accent-blue); }
+    .badge-ongoing::before { background: var(--accent-blue); }
+    .badge-overdue { background: rgba(239,68,68, .1); border-color: rgba(239,68,68,.3); color: var(--danger); }
+    .badge-overdue::before { background: var(--danger); }
+    .badge-pending { background: rgba(245,158,11, .1); border-color: rgba(245,158,11,.3); color: var(--warning); }
+    .badge-pending::before { background: var(--warning); }
+
+    .platform-tag {
+      padding: 4px 10px;
+      background: rgba(139, 92, 246, 0.1);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent-purple);
+    }
+
+    .hidden { display: none; }
+
+    /* ====== Responsive ====== */
+    @media (max-width: 768px) {
+      .container { padding: 16px; }
+      .header { flex-direction: column; text-align: center; }
+      .status-badge { margin-left: 0; }
+      .filters-grid { grid-template-columns: 1fr; }
+      .kpi-row { grid-template-columns: repeat(2, 1fr); }
+      .charts-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- ====== Header ====== -->
+    <div class="header">
+      <div class="logo">TV</div>
+      <div class="header-content">
+        <h1>TVD Content Report</h1>
+        <div class="header-subtitle">แดชบอร์ดเชื่อม Google Sheet • วิเคราะห์แบบเรียลไทม์</div>
+      </div>
+      <div class="status-badge" id="connectionStatus">⚡ กำลังเชื่อมต่อ...</div>
+    </div>
+
+    <!-- ====== Tabs ====== -->
+    <div class="nav-tabs">
+      <button class="nav-tab active" data-page="dashboard">📊 Dashboard</button>
+      <button class="nav-tab" data-page="details">📋 รายการงาน</button>
+    </div>
+
+    <!-- ====== Filters ====== -->
+    <div class="filters-panel">
+      <div class="filters-grid">
+        <div class="filter-group">
+          <label class="filter-label">🔍 ค้นหา</label>
+          <input id="searchInput" type="search" placeholder="ค้นหา Project, Product, Remark...">
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">📱 Platform</label>
+          <select id="platformFilter">
+            <option value="">ทุกแพลตฟอร์ม</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">👤 Designer</label>
+          <select id="designerFilter" style="display:none;">
+            <option value="">ทุกดีไซเนอร์</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">📌 สถานะ</label>
+          <select id="statusFilter">
+            <option value="">ทุกสถานะ</option>
+            <option value="เสร็จแล้ว">เสร็จแล้ว</option>
+            <option value="อยู่ในกำหนด">อยู่ในกำหนด</option>
+            <option value="เลยกำหนด">เลยกำหนด</option>
+            <option value="ยังไม่ได้กำหนด">ยังไม่ได้กำหนด</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">🎨 ประเภทงาน</label>
+          <select id="categoryFilter">
+            <option value="">ทุกประเภท</option>
+            <option value="artwork">Artwork</option>
+            <option value="video">Video</option>
+            <option value="motion">Motion Graphic</option>
+            <option value="script">Script ออกกอง</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">📅 อิงวันที่</label>
+          <select id="dateSourceFilter">
+            <option value="Deadline">Deadline</option>
+            <option value="Date">Date</option>
+            <option value="MaxDate">MaxDate</option>
+          </select>
+        </div>
+
+        <div class="filter-group date-range">
+          <div>
+            <label class="filter-label">จาก</label>
+            <input id="dateFrom" type="date">
+          </div>
+          <div>
+            <label class="filter-label">ถึง</label>
+            <input id="dateTo" type="date">
+          </div>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <button id="btn7Days">7 วันล่าสุด</button>
+        <button id="btn30Days">30 วันล่าสุด</button>
+        <button id="btnThisMonth">เดือนนี้</button>
+        <button id="importBtn">📁 นำเข้า CSV</button>
+        <button id="exportBtn" class="primary">💾 ส่งออก PDF</button>
+        <button id="resetBtn">🔄 รีเซ็ต</button>
+      </div>
+    </div>
+
+    <!-- ====== Dashboard ====== -->
+    <div id="dashboardView">
+      <!-- KPI Cards -->
+      <div class="kpi-grid">
+        <div class="kpi-row">
+          <div class="kpi-card">
+            <div class="kpi-label">งานทั้งหมด</div>
+            <div class="kpi-value" id="kpiTotal">0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">✅ เสร็จแล้ว</div>
+            <div class="kpi-value" id="kpiDone">0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">⏳ อยู่ในกำหนด</div>
+            <div class="kpi-value" id="kpiOngoing">0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">⚠️ เลยกำหนด</div>
+            <div class="kpi-value" id="kpiOverdue">0</div>
+          </div>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi-card">
+            <div class="kpi-label">🎨 Artwork</div>
+            <div class="kpi-value" id="kpiArtwork">0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">🎬 Video</div>
+            <div class="kpi-value" id="kpiVideo">0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">✨ Motion</div>
+            <div class="kpi-value" id="kpiMotion">0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">📝 Script</div>
+            <div class="kpi-value" id="kpiScript">0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="charts-grid">
+        <div class="chart-card">
+          <div class="chart-title">สถานะงาน</div>
+          <canvas id="statusChart"></canvas>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Platform</div>
+          <canvas id="platformChart"></canvas>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">ประเภทงาน</div>
+          <canvas id="typeChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== Details ====== -->
+    <div id="detailsView" class="hidden">
+      <div class="table-container">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th data-sort="row">#</th>
+                <th data-sort="__qty">จำนวน</th><!-- เพิ่มคอลัมน์จำนวน -->
+                <th data-sort="Platform">Platform</th>
+                <th data-sort="Product">Product</th>
+                <th data-sort="Type">Type</th>
+                <th data-sort="Project">Project</th>
+                <th data-sort="Remark">Remark</th>
+                <th data-sort="Designer">Designer</th>
+                <th data-sort="Date">Date</th>
+                <th data-sort="Deadline">Deadline</th>
+                <th data-sort="Status">Status</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden input for CSV import -->
+  <input type="file" id="csvFileInput" accept=".csv" style="display:none" />
+
+  <!-- ====== Libraries ====== -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+  <!-- ====== App Script ====== -->
+  <script>
+    /* ==============================
+       CONFIG
+    =============================== */
+    const CONFIG = {
+      // วาง URL /exec ของ Apps Script Web App ที่ Deploy แล้ว
+      SHEET_URL: 'https://script.google.com/macros/s/AKfycbyaUue8SRvfSnaQxBhG5jJs9fv6pHevhL0aJisElYZtq3h4B6cYupguQF-kT1r28JhK/exec'
+    };
+
+    /* ==============================
+       STATE
+    =============================== */
+    let data = [];
+    let filteredData = [];
+    let sortKey = 'row';
+    let sortDir = 1;
+    let charts = {};
+
+    /* ==============================
+       HELPERS
+    =============================== */
+    const TH_MONTHS = {
+      "ม.ค.": 1, "ก.พ.": 2, "มี.ค.": 3, "เม.ย.": 4, "พ.ค.": 5, "มิ.ย.": 6,
+      "ก.ค.": 7, "ส.ค.": 8, "ก.ย.": 9, "ต.ค.": 10, "พ.ย.": 11, "ธ.ค.": 12
+    };
+
+    function toBool(v) {
+      if (typeof v === 'boolean') return v;
+      const s = String(v || '').trim().toLowerCase();
+      return ['true', '1', 'yes', 'y', '✓', 'done'].includes(s);
+    }
+
+    function parseThaiDate(str) {
+      if (!str) return null;
+      const s = String(str).trim();
+
+      // Handle DD/MM/YYYY format from API
+      const dmyMatch = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+      if (dmyMatch) {
+        const [_, day, month, year] = dmyMatch;
+        return new Date(year, month - 1, parseInt(day));
+      }
+
+      // Handle ISO format if present
+      if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
+        const d = new Date(s);
+        if (!isNaN(d)) return d;
+      }
+
+      // Handle Thai format (1/ต.ค./25)
+      const thMatch = s.match(/(\d{1,2})\s*\/\s*([ก-๛\.]+)\s*\/\s*(\d{2,4})/);
+      if (thMatch) {
+        const day = parseInt(thMatch[1]);
+        const monthStr = thMatch[2].replace(/\s+/g, '');
+        let year = parseInt(thMatch[3]);
+        
+        const month = TH_MONTHS[monthStr];
+        if (!month) return null;
+        
+        if (year < 100) year = 2000 + year;
+        if (year > 2400) year -= 543;
+        
+        return new Date(year, month - 1, day);
+      }
+
+      return null;
+    }
+
+    function fmtDateDisplay(v) {
+      if (!v) return '-';
+      
+      // If already in DD/MM/YYYY format, return as is
+      if (typeof v === 'string' && /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(v)) {
+        return v;
+      }
+      
+      const d = parseThaiDate(v);
+      if (!d) return v || '-';
+      
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const year = d.getFullYear();
+      return `${day}/${month}/${year}`;
+    }
+
+    function getUniqueValues(arr, key) {
+      return Array.from(
+        new Set(arr.map(item => (item?.[key] ?? '').toString().trim()).filter(Boolean))
+      ).sort();
+    }
+
+    function getCategory(row) {
+      const text = [row.Type, row.Remark, row.Project].join(' ').toLowerCase();
+      if (text.includes('ออกแบบใหม่') || text.includes('re design')) return 'artwork';
+      if (text.includes('ตัดคลิป') || text.includes('video')) return 'video';
+      if (text.includes('motion')) return 'motion';
+      if (text.includes('จองคิว') || text.includes('script')) return 'script';
+      return '';
+    }
+
+    // --------- NEW: ปริมาณ (จำนวนชิ้น) + ตรวจแถวมีความหมาย ---------
+    function getQty(row){
+      const raw = row['จำนวนชิ้น'] ?? row['Quantity'] ?? row['qty'] ?? row['Qty'];
+      const n = Number(String(raw ?? '').toString().replace(/[, ]/g,'').trim());
+      return Number.isFinite(n) && n > 0 ? n : 0;
+    }
+
+    function isMeaningfulRow(r){
+      const hasCore =
+        [r.Platform, r.Product, r.Project, r.Type, r.Remark].some(v => (v ?? '').toString().trim() !== '');
+      const hasAnyDate = !!(parseThaiDate(r.Date) || parseThaiDate(r.Deadline) || parseThaiDate(r.Finish));
+      const approved = toBool(r.Approved);
+      const hasStatus = (r.Status ?? '').toString().trim() !== '';
+      const qty = getQty(r);
+      return hasCore || hasAnyDate || hasStatus || approved || qty > 0;
+    }
+
+    function computeStatus(row) {
+      // 1) Approved wins
+      if (toBool(row.Approved)) return 'เสร็จแล้ว';
+
+      // 2) Existing Status in data (if already normalized)
+      if (row.Status) {
+        const s = String(row.Status).trim();
+        if (['เสร็จแล้ว', 'อยู่ในกำหนด', 'เลยกำหนด', 'ยังไม่ได้กำหนด'].includes(s)) {
+          return s;
+        }
+      }
+
+      // 3) Finish date
+      const finish = row.Finish ? parseThaiDate(row.Finish) : null;
+      if (finish) return 'เสร็จแล้ว';
+
+      // 4) Deadline
+      const deadline = row.Deadline ? parseThaiDate(row.Deadline) : null;
+      if (deadline) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return deadline < today ? 'เลยกำหนด' : 'อยู่ในกำหนด';
+      }
+
+      return 'ยังไม่ได้กำหนด';
+    }
+
+    /* ==============================
+       LOAD DATA
+    =============================== */
+    async function loadData() {
+      const statusEl = document.getElementById('connectionStatus');
+
+      try {
+        if (!CONFIG.SHEET_URL) throw new Error('No URL');
+
+        statusEl.textContent = '⚡ กำลังโหลด...';
+
+        const res = await fetch(CONFIG.SHEET_URL, { headers: { 'Accept': 'application/json' } });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+        const result = await res.json();
+        const rows = Array.isArray(result) ? result : (result.rows || []);
+
+        // Normalize + ตัดแถวว่างออก
+        data = rows.map(r => ({ ...r, Approved: toBool(r.Approved) })).filter(isMeaningfulRow);
+
+        statusEl.textContent = '✅ เชื่อมต่อสำเร็จ';
+        statusEl.style.background = 'rgba(16, 185, 129, 0.1)';
+        statusEl.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+        statusEl.style.color = 'var(--success)';
+      } catch (error) {
+        console.error('Load error:', error);
+        data = [];
+        statusEl.textContent = '❌ โหลดข้อมูลไม่สำเร็จ';
+        statusEl.style.background = 'rgba(239, 68, 68, 0.1)';
+        statusEl.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+        statusEl.style.color = 'var(--danger)';
+      }
+
+      buildFilters();
+      applyFilters();
+    }
+
+    /* ==============================
+       FILTERS
+    =============================== */
+    function buildFilters() {
+      const platformSelect = document.getElementById('platformFilter');
+      const designerSelect = document.getElementById('designerFilter');
+
+      platformSelect.innerHTML = '<option value="">ทุกแพลตฟอร์ม</option>';
+      designerSelect.innerHTML = '<option value="">ทุกดีไซเนอร์</option>';
+
+      getUniqueValues(data, 'Platform').forEach(val => {
+        const opt = document.createElement('option');
+        opt.value = val;
+        opt.textContent = val;
+        platformSelect.appendChild(opt);
+      });
+
+      getUniqueValues(data, 'Designer').forEach(val => {
+        const opt = document.createElement('option');
+        opt.value = val;
+        opt.textContent = val;
+        designerSelect.appendChild(opt);
+      });
+
+      if (designerSelect.children.length > 1) {
+        designerSelect.style.display = '';
+      }
+    }
+
+    function applyFilters() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const platform = document.getElementById('platformFilter').value;
+      const designer = document.getElementById('designerFilter').value;
+      const status = document.getElementById('statusFilter').value;
+      const category = document.getElementById('categoryFilter').value;
+      const dateKey = document.getElementById('dateSourceFilter').value || 'Deadline';
+
+      // Fix date filtering
+      let dateFrom = null;
+      let dateTo = null;
+      
+      const dfStr = document.getElementById('dateFrom').value;
+      const dtStr = document.getElementById('dateTo').value;
+      
+      if (dfStr) {
+        dateFrom = new Date(dfStr);
+        dateFrom.setHours(0, 0, 0, 0);
+      }
+      
+      if (dtStr) {
+        dateTo = new Date(dtStr);
+        dateTo.setHours(23, 59, 59, 999);
+      }
+
+      const useDateRange = !!(dateFrom || dateTo);
+
+      filteredData = data.filter(row => {
+        const rowStatus = computeStatus(row);
+        const rowCategory = getCategory(row);
+
+        const matchSearch = !search || [
+          row.Project, row.Product, row.Remark, row.Type, row.Platform
+        ].some(field => (field || '').toString().toLowerCase().includes(search));
+
+        const matchPlatform = !platform || row.Platform === platform;
+        const matchDesigner = !designer || row.Designer === designer;
+        const matchStatus = !status || rowStatus === status;
+        const matchCategory = !category || rowCategory === category;
+
+        // Improved date filtering
+        let matchDate = true;
+        if (useDateRange) {
+          const baseDate = parseThaiDate(row[dateKey]);
+          if (!baseDate) return false;
+
+          if (dateFrom && baseDate < dateFrom) return false;
+          if (dateTo && baseDate > dateTo) return false;
+        }
+
+        return matchSearch && matchPlatform && matchDesigner && matchStatus && matchCategory && matchDate;
+      });
+
+      updateKPIs();
+      updateCharts();
+      updateTable();
+    }
+
+    /* ==============================
+       KPI
+    =============================== */
+    function updateKPIs() {
+      const done = filteredData.filter(r => computeStatus(r) === 'เสร็จแล้ว').length;
+      const ongoing = filteredData.filter(r => computeStatus(r) === 'อยู่ในกำหนด').length;
+      const overdue = filteredData.filter(r => computeStatus(r) === 'เลยกำหนด').length;
+
+      document.getElementById('kpiTotal').textContent   = filteredData.length;
+      document.getElementById('kpiDone').textContent    = done;
+      document.getElementById('kpiOngoing').textContent = ongoing;
+      document.getElementById('kpiOverdue').textContent = overdue;
+
+      // Artwork: แสดง "จำนวนงาน • จำนวนภาพทั้งหมด"
+      const isArtwork = r => (r.Type || '').toLowerCase().includes('ออกแบบใหม่') || (r.Type || '').toLowerCase().includes('re design');
+      const isVideo   = r => (r.Type || '').toLowerCase().includes('ตัดคลิป') || (r.Type || '').toLowerCase().includes('video');
+      const isMotion  = r => (r.Type || '').toLowerCase().includes('motion');
+      const isScript  = r => (r.Type || '').toLowerCase().includes('จองคิว') || (r.Type || '').toLowerCase().includes('script');
+
+      const artworkRows   = filteredData.filter(isArtwork);
+      const artworkCount  = artworkRows.length;
+      const artworkImages = artworkRows.reduce((sum,r)=> sum + getQty(r), 0);
+
+      const videoCount  = filteredData.filter(isVideo).length;
+      const motionCount = filteredData.filter(isMotion).length;
+      const scriptCount = filteredData.filter(isScript).length;
+
+      // แสดงสองบรรทัดอ่านง่าย
+      document.getElementById('kpiArtwork').innerHTML = `${artworkCount}<div style="font-size:12px;color:#9ca3af">ภาพทั้งหมด ${artworkImages} รูป</div>`;
+      document.getElementById('kpiVideo').textContent   = String(videoCount);
+      document.getElementById('kpiMotion').textContent  = String(motionCount);
+      document.getElementById('kpiScript').textContent  = String(scriptCount);
+    }
+
+    /* ==============================
+       CHARTS
+    =============================== */
+    function updateCharts() {
+      // ----- Status Chart -----
+      const statusLabels = ['เสร็จแล้ว', 'อยู่ในกำหนด', 'เลยกำหนด', 'ยังไม่ได้กำหนด'];
+      const statusData = statusLabels.map(label =>
+        filteredData.filter(r => computeStatus(r) === label).length
+      );
+
+      if (!charts.status) {
+        charts.status = new Chart(document.getElementById('statusChart'), {
+          type: 'doughnut',
+          data: {
+            labels: statusLabels,
+            datasets: [{
+              data: statusData,
+              backgroundColor: ['#10b981', '#3b82f6', '#ef4444', '#f59e0b'],
+              borderWidth: 0
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+              legend: { position: 'bottom', labels: { color: '#e8eaf0', padding: 15 } }
+            },
+            cutout: '65%'
+          }
+        });
+      } else {
+        charts.status.data.datasets[0].data = statusData;
+        charts.status.update();
+      }
+
+      // ----- Platform Chart -----
+      const platforms = getUniqueValues(filteredData, 'Platform');
+      const platformData = platforms.map(p => filteredData.filter(r => r.Platform === p).length);
+
+      if (!charts.platform) {
+        charts.platform = new Chart(document.getElementById('platformChart'), {
+          type: 'bar',
+          data: {
+            labels: platforms,
+            datasets: [{
+              label: 'จำนวนงาน',
+              data: platformData,
+              backgroundColor: '#3b82f6',
+              borderRadius: 8
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: { beginAtZero: true, ticks: { color: '#9ca3af' }, grid: { color: 'rgba(100, 150, 255, 0.1)' } },
+              x: { ticks: { color: '#9ca3af' }, grid: { display: false } }
+            }
+          }
+        });
+      } else {
+        charts.platform.data.labels = platforms;
+        charts.platform.data.datasets[0].data = platformData;
+        charts.platform.update();
+      }
+
+      // ----- Type Chart -----
+      const typeLabels = ['Artwork', 'Video', 'Motion', 'Script'];
+      const typeKeywords = ['ออกแบบใหม่|re design', 'ตัดคลิป|video', 'motion', 'จองคิว|script'];
+      const typeData = typeKeywords.map(regex =>
+        filteredData.filter(r => new RegExp(regex, 'i').test((r.Type || ''))).length
+      );
+
+      if (!charts.type) {
+        charts.type = new Chart(document.getElementById('typeChart'), {
+          type: 'bar',
+          data: {
+            labels: typeLabels,
+            datasets: [{
+              label: 'จำนวนงาน',
+              data: typeData,
+              backgroundColor: '#8b5cf6',
+              borderRadius: 8
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: { beginAtZero: true, ticks: { color: '#9ca3af' }, grid: { color: 'rgba(100, 150, 255, 0.1)' } },
+              x: { ticks: { color: '#9ca3af' }, grid: { display: false } }
+            }
+          }
+        });
+      } else {
+        charts.type.data.datasets[0].data = typeData;
+        charts.type.update();
+      }
+    }
+
+    /* ==============================
+       TABLE
+    =============================== */
+    function updateTable() {
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '';
+
+      const sorted = [...filteredData]
+        .map((row, idx) => ({ ...row, _idx: idx + 1, __qty: getQty(row) }))
+        .sort((a, b) => {
+          if (sortKey === 'row') return sortDir * (a._idx - b._idx);
+
+          // sort by จำนวน
+          if (sortKey === '__qty'){
+            if (a.__qty === b.__qty) return 0;
+            return sortDir * (a.__qty > b.__qty ? 1 : -1);
+          }
+
+          let valA = a[sortKey];
+          let valB = b[sortKey];
+
+          if (sortKey === 'Status') {
+            valA = computeStatus(a);
+            valB = computeStatus(b);
+          }
+
+          if (['Deadline', 'Date', 'MaxDate'].includes(sortKey)) {
+            valA = parseThaiDate(valA);
+            valB = parseThaiDate(valB);
+          } else {
+            valA = (valA || '').toString().toLowerCase();
+            valB = (valB || '').toString().toLowerCase();
+          }
+
+          if (valA === valB) return 0;
+          if (!valA) return 1;
+          if (!valB) return -1;
+          return sortDir * (valA > valB ? 1 : -1);
+        });
+
+      sorted.forEach(row => {
+        const status = computeStatus(row);
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${row._idx}</td>
+          <td>${row.__qty || '-'}</td>
+          <td><span class="platform-tag">${row.Platform || '-'}</span></td>
+          <td>${row.Product || '-'}</td>
+          <td>${row.Type || '-'}</td>
+          <td title="${row.Project || ''}">${(row.Project || '-').substring(0, 40)}${(row.Project || '').length > 40 ? '...' : ''}</td>
+          <td>${row.Remark || '-'}</td>
+          <td>${row.Designer || '-'}</td>
+          <td>${fmtDateDisplay(row.Date)}</td>
+          <td>${fmtDateDisplay(row.Deadline)}</td>
+          <td>
+            <span class="badge ${
+              {
+                'เสร็จแล้ว': 'badge-done',
+                'อยู่ในกำหนด': 'badge-ongoing',
+                'เลยกำหนด': 'badge-overdue',
+                'ยังไม่ได้กำหนด': 'badge-pending'
+              }[status] || 'badge-pending'
+            }">${status}</span>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    /* ==============================
+       EVENTS
+    =============================== */
+    // Tabs
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const page = tab.dataset.page;
+        document.getElementById('dashboardView').classList.toggle('hidden', page !== 'dashboard');
+        document.getElementById('detailsView').classList.toggle('hidden', page !== 'details');
+      });
+    });
+
+    // Filters
+    document.getElementById('searchInput').addEventListener('input', applyFilters);
+    document.getElementById('platformFilter').addEventListener('change', applyFilters);
+    document.getElementById('designerFilter').addEventListener('change', applyFilters);
+    document.getElementById('statusFilter').addEventListener('change', applyFilters);
+    document.getElementById('categoryFilter').addEventListener('change', applyFilters);
+    document.getElementById('dateSourceFilter').addEventListener('change', applyFilters);
+    document.getElementById('dateFrom').addEventListener('change', applyFilters);
+    document.getElementById('dateTo').addEventListener('change', applyFilters);
+
+    // Quick ranges
+    document.getElementById('btn7Days').addEventListener('click', () => {
+      const today = new Date();
+      const from = new Date(today);
+      from.setDate(from.getDate() - 6);
+      document.getElementById('dateFrom').value = from.toISOString().split('T')[0];
+      document.getElementById('dateTo').value = today.toISOString().split('T')[0];
+      applyFilters();
+    });
+
+    document.getElementById('btn30Days').addEventListener('click', () => {
+      const today = new Date();
+      const from = new Date(today);
+      from.setDate(from.getDate() - 29);
+      document.getElementById('dateFrom').value = from.toISOString().split('T')[0];
+      document.getElementById('dateTo').value = today.toISOString().split('T')[0];
+      applyFilters();
+    });
+
+    document.getElementById('btnThisMonth').addEventListener('click', () => {
+      const now = new Date();
+      const first = new Date(now.getFullYear(), now.getMonth(), 1);
+      const last  = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      document.getElementById('dateFrom').value = first.toISOString().split( 'T')[0];
+      document.getElementById('dateTo').value   = last.toISOString().split('T')[0];
+      applyFilters();
+    });
+
+    // CSV Import
+    document.getElementById('importBtn').addEventListener('click', () => {
+      document.getElementById('csvFileInput').click();
+    });
+
+    document.getElementById('csvFileInput').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const text = event.target.result;
+        const rows = text.split(/\r?\n/).map(row => row.split(','));
+        const headers = rows[0] || [];
+
+        data = rows.slice(1).filter(row => row.filter(Boolean).length).map(row => {
+          const obj = {};
+          headers.forEach((header, idx) => {
+            obj[(header || '').trim()] = row[idx] ? row[idx].trim() : '';
+          });
+          return obj;
+        });
+
+        // Normalize + filter empty after CSV as well
+        data = data.map(r => ({ ...r, Approved: toBool(r.Approved) })).filter(isMeaningfulRow);
+
+        buildFilters();
+        applyFilters();
+
+        const statusEl = document.getElementById('connectionStatus');
+        statusEl.textContent = '📁 ใช้ไฟล์ CSV';
+        statusEl.style.background = 'rgba(59, 130, 246, 0.1)';
+        statusEl.style.borderColor = 'rgba(59, 130, 246, 0.3)';
+        statusEl.style.color = 'var(--accent-blue)';
+      };
+
+      reader.readAsText(file);
+      e.target.value = '';
+    });
+
+    // PDF Export
+    document.getElementById('exportBtn').addEventListener('click', async () => {
+      try {
+        const dashboard = document.getElementById('dashboardView');
+        dashboard.style.background = '#0a0e1a'; // Force background for PDF
+        
+        const canvas = await html2canvas(dashboard, {
+          scale: 2,
+          backgroundColor: '#0a0e1a',
+          logging: false,
+          allowTaint: true,
+          useCORS: true,
+          scrollY: -window.scrollY // Fix scrolling issues
+        });
+
+        const imgData = canvas.toDataURL('image/png');
+        const { jsPDF } = window.jspdf;
+        
+        if (!jsPDF) {
+          throw new Error('jsPDF not loaded');
+        }
+
+        const pdf = new jsPDF('landscape', 'pt', 'a4');
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        const imgWidth = pageWidth - 40;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        pdf.text('TVD Content Dashboard Report', 20, 30);
+        pdf.addImage(imgData, 'PNG', 20, 50, imgWidth, Math.min(imgHeight, pageHeight - 70));
+
+        const d = new Date();
+        const filename = `tvd-dashboard-${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}.pdf`;
+        pdf.save(filename);
+
+      } catch (error) {
+        console.error('PDF Export error:', error);
+        alert('ไม่สามารถสร้าง PDF ได้ กรุณาลองใหม่อีกครั้ง');
+      }
+    });
+
+    // Sorting
+    document.querySelectorAll('th[data-sort]').forEach(th => {
+      th.addEventListener('click', () => {
+        const key = th.dataset.sort;
+        if (sortKey === key) { sortDir *= -1; }
+        else { sortKey = key; sortDir = 1; }
+        updateTable();
+      });
+    });
+
+    // Reset button
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      // Clear search
+      document.getElementById('searchInput').value = '';
+      
+      // Reset dropdowns
+      document.getElementById('platformFilter').value = '';
+      document.getElementById('designerFilter').value = '';
+      document.getElementById('statusFilter').value = '';
+      document.getElementById('categoryFilter').value = '';
+      document.getElementById('dateSourceFilter').value = 'Deadline';
+      
+      // Clear date range
+      document.getElementById('dateFrom').value = '';
+      document.getElementById('dateTo').value = '';
+
+      // Reload data and reapply filters
+      loadData();
+    });
+
+    // Init
+    document.addEventListener('DOMContentLoaded', loadData);
+  </script>
+</body>
+</html>
