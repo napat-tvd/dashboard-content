@@ -365,19 +365,19 @@
       backdrop-filter: blur(12px); 
       border: 1px solid var(--border); 
       border-radius: 16px; 
-      padding: 24px; 
+      padding: 28px; 
       box-shadow: var(--shadow); 
-      transition: all 0.3s ease;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
-      /* ปรับขนาดกล่องกราฟให้พอดีกับข้อมูล */
-      height: 600px;
+      height: 450px;
       display: flex;
       flex-direction: column;
       animation: fadeInUp 0.8s ease backwards;
       animation-delay: calc(var(--order, 0) * 200ms);
     }
     .chart-card:hover {
-      transform: translateY(-4px) rotate(-0.5deg);
+      transform: translateY(-5px);
+      border-color: var(--border-hover);
       box-shadow: var(--shadow-lg),
                   0 0 25px rgba(59, 130, 246, 0.15),
                   0 0 50px rgba(59, 130, 246, 0.1);
@@ -385,13 +385,26 @@
     .chart-title { 
       font-size: 16px; 
       font-weight: 600; 
-      margin-bottom: 16px; 
-      color: var(--text-primary); 
-      flex-shrink: 0;
+      margin-bottom: 20px;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .chart-title::before {
+      content: '';
+      display: block;
+      width: 4px;
+      height: 16px;
+      background: linear-gradient(to bottom, var(--accent-blue), var(--accent-purple));
+      border-radius: 2px;
     }
     .chart-container {
       flex: 1;
       position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     /* ====== Table ====== */
@@ -531,7 +544,7 @@
         <h1>TVD Content Report</h1>
         <div class="header-subtitle">
           แดชบอร์ดเชื่อม Google Sheet • วิเคราะห์แบบเรียลไทม์
-          <span class="version-badge">Ver.1.0.4 แก้ไขบัค ปรับ UI</span>
+          <span class="version-badge">Ver.1.0.5 แก้ไขบัคตาราง แก้ไขกราฟ ปรับ UI</span>
         </div>
       </div>
       <div class="status-badge" id="connectionStatus">⚡ กำลังเชื่อมต่อ...</div>
@@ -1157,48 +1170,128 @@
         charts[canvasId].destroy();
       }
 
+      // NEW: Custom chart configurations based on type
+      const commonOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              color: '#e8eaf0',
+              padding: 20,
+              usePointStyle: true,
+              font: { 
+                size: 13,
+                family: "'Inter', 'Noto Sans Thai', system-ui"
+              }
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(15, 20, 35, 0.9)',
+            titleFont: {
+              size: 14,
+              family: "'Inter', 'Noto Sans Thai', system-ui"
+            },
+            bodyFont: {
+              size: 13,
+              family: "'Inter', 'Noto Sans Thai', system-ui"
+            },
+            padding: 12,
+            cornerRadius: 8,
+            displayColors: true,
+            usePointStyle: true,
+            callbacks: {
+              label: function(context) {
+                const value = context.raw;
+                const percentage = ((value / data.reduce((a, b) => a + b, 0)) * 100).toFixed(1);
+                return ` ${context.label}: ${value} (${percentage}%)`;
+              }
+            }
+          }
+        },
+        animation: {
+          animateScale: true,
+          animateRotate: true,
+          delay: (context) => context.dataIndex * 100
+        }
+      };
+
+      // Specific configurations for each chart
+      const chartConfigs = {
+        'statusChart': {
+          type: 'doughnut',
+          options: {
+            ...commonOptions,
+            cutout: '75%',
+            radius: '90%'
+          }
+        },
+        'platformChart': {
+          type: 'polarArea',
+          options: {
+            ...commonOptions,
+            scales: {
+              r: {
+                ticks: { display: false },
+                grid: { 
+                  color: 'rgba(255,255,255,0.05)',
+                  lineWidth: 1
+                }
+              }
+            },
+            startAngle: -30
+          }
+        },
+        'typeChart': {
+          type: 'bar',
+          options: {
+            ...commonOptions,
+            indexAxis: 'y',
+            scales: {
+              x: {
+                grid: {
+                  color: 'rgba(255,255,255,0.05)',
+                  lineWidth: 1
+                },
+                ticks: { 
+                  color: '#9ca3af',
+                  font: { size: 12 }
+                }
+              },
+              y: {
+                grid: { display: false },
+                ticks: { 
+                  color: '#e8eaf0',
+                  font: { size: 13 }
+                }
+              }
+            },
+            plugins: {
+              ...commonOptions.plugins,
+              legend: { display: false }
+            }
+          }
+        }
+      };
+
+      const config = chartConfigs[canvasId];
+      
       charts[canvasId] = new Chart(ctx, {
-        type: 'doughnut',
+        type: config.type,
         data: {
           labels: labels,
           datasets: [{
             data: data,
-            backgroundColor: colors,
-            borderWidth: 0,
-            hoverOffset: 8
+            backgroundColor: colors.map(c => `${c}CC`),
+            borderColor: colors,
+            borderWidth: 2,
+            borderRadius: config.type === 'bar' ? 4 : 0,
+            hoverOffset: 15,
+            hoverBorderWidth: 0
           }]
         },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              position: 'bottom',
-              labels: {
-                color: '#e8eaf0',
-                font: { size: 12 }
-              }
-            }
-          },
-          cutout: '65%',
-          animation: {
-            animateScale: true,
-            animateRotate: true,
-            delay: (context) => context.dataIndex * 100
-          },
-          hover: {
-            mode: 'nearest',
-            intersect: true,
-            animationDuration: 200
-          },
-          transitions: {
-            active: {
-              animation: {
-                duration: 300
-              }
-            }
-          }
-        }
+        options: config.options
       });
     }
 
@@ -1246,26 +1339,53 @@
         const isDashboard = !document.getElementById('dashboardView').classList.contains('hidden');
         const elementToCapture = isDashboard ? document.getElementById('dashboardView') : document.getElementById('detailsView');
         
-        // สร้าง wrapper div สำหรับเพิ่มพื้นที่ว่างรอบๆ
+        // Create a clone of the element to capture
+        const clone = elementToCapture.cloneNode(true);
+        
+        // Create wrapper with fixed width to maintain layout
         const wrapper = document.createElement('div');
-        wrapper.style.padding = '100px';
-        wrapper.style.background = 'radial-gradient(ellipse at top, #1e293b 0%, var(--bg-primary) 50%)';
-        wrapper.appendChild(elementToCapture.cloneNode(true));
+        wrapper.style.cssText = `
+          position: fixed;
+          left: -9999px;
+          width: 1400px;
+          padding: 40px;
+          background: radial-gradient(ellipse at top, #1e293b 0%, var(--bg-primary) 50%);
+          z-index: -1;
+        `;
+        
+        // Reset any responsive styles in the clone
+        clone.style.cssText = `
+          width: 100% !important;
+          max-width: none !important;
+          transform: none !important;
+          transition: none !important;
+        `;
+        
+        // Ensure charts maintain size
+        clone.querySelectorAll('.chart-card').forEach(card => {
+          card.style.height = '400px';
+        });
+        
+        wrapper.appendChild(clone);
         document.body.appendChild(wrapper);
         
+        // Wait for charts to render
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
         const canvas = await html2canvas(wrapper, {
-          backgroundColor: '#0a0e1a',
+          backgroundColor: null,
           scale: 2,
           useCORS: true,
           allowTaint: true,
-          logging: false
+          logging: false,
+          width: 1400,
+          height: wrapper.offsetHeight
         });
         
-        // ลบ wrapper ออกหลังจาก capture เสร็จ
+        // Clean up
         document.body.removeChild(wrapper);
         
         if (download) {
-          // Download PNG
           const link = document.createElement('a');
           const timestamp = new Date().toISOString().slice(0, 10);
           const type = isDashboard ? 'dashboard' : 'details';
@@ -1274,7 +1394,6 @@
           link.click();
           showNotification('ดาวน์โหลด PNG สำเร็จ!', 'success');
         } else {
-          // Copy to clipboard
           canvas.toBlob(async (blob) => {
             try {
               await navigator.clipboard.write([
