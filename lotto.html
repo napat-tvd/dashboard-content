@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>ตัวช่วยทำภาพผลสลากกินแบ่งรัฐบาล</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    @font-face {
+      font-family: 'FCDefragment';
+      src: url('./font/FCDefragment-Regular.otf') format('opentype');
+      font-weight: 400;
+    }
+    @font-face {
+      font-family: 'FCDefragment';
+      src: url('./font/FCDefragment-Bold.otf') format('opentype');
+      font-weight: 700;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-primary: #0a0e1a;
+      --bg-secondary: #0f1420;
+      --bg-card: linear-gradient(145deg, rgba(20, 28, 50, 0.8), rgba(15, 20, 35, 0.6));
+      --border: rgba(100, 150, 255, 0.15);
+      --border-hover: rgba(100, 150, 255, 0.3);
+      --text-primary: #e8eaf0;
+      --text-secondary: #9ca3af;
+      --text-muted: #6b7280;
+      --accent-blue: #3b82f6;
+      --accent-cyan: #06b6d4;
+      --accent-purple: #8b5cf6;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+    }
+
+    body {
+      font-family: 'FCDefragment', 'Noto Sans Thai', system-ui, -apple-system, sans-serif;
+      background: radial-gradient(ellipse at top, #1e293b 0%, var(--bg-primary) 50%);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ====== Navbar ====== */
+    .navbar {
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 32px;
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .navbar-container {
+      max-width: 1600px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--text-primary);
+    }
+
+    .navbar-logo {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 20px;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .navbar-nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .nav-link {
+      padding: 10px 18px;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .nav-link:hover {
+      color: var(--text-primary);
+      border-color: var(--border-hover);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-link.active {
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+      color: white;
+      border-color: transparent;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    /* ====== Container ====== */
+    .main-container {
+      flex: 1;
+      max-width: 1600px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 40px 32px;
+    }
+
+    .container {
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: var(--shadow);
+      display: grid;
+      grid-template-columns: minmax(0, 360px) minmax(0, 1fr);
+      gap: 32px;
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 1.8rem;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin: 20px 0 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-secondary);
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      font-family: 'FCDefragment', monospace;
+      transition: all 0.3s ease;
+      margin-bottom: 8px;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      outline: none;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 16px;
+      padding: 12px 20px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
+      cursor: pointer;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      font-weight: 600;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .btn:hover::before {
+      left: 100%;
+    }
+
+    .btn:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+      border: none;
+      color: white;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn.primary:hover {
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.5);
+      transform: translateY(-2px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-home {
+      width: 100%;
+      margin-top: 0;
+      margin-bottom: 16px;
+    }
+
+    .note {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-top: 8px;
+      line-height: 1.4;
+    }
+
+    .preview-wrapper {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      min-height: 400px;
+    }
+
+    canvas {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      background: var(--bg-secondary);
+      box-shadow: var(--shadow);
+    }
+
+    /* ====== Responsive ====== */
+    @media (max-width: 768px) {
+      .navbar-container {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .navbar-nav {
+        width: 100%;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .main-container {
+        padding: 20px 16px;
+      }
+
+      .container {
+        grid-template-columns: 1fr;
+        padding: 20px;
+        gap: 20px;
+      }
+
+      h1 {
+        font-size: 1.4rem;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .preview-wrapper {
+        order: -1;
+        min-height: 300px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- ====== Navbar ====== -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="home.html" class="navbar-brand">
+        <div class="navbar-logo">TV</div>
+        <span>TVD Dashboard</span>
+      </a>
+      <div class="navbar-nav">
+        <a href="home.html" class="nav-link">🏠 Home</a>
+        <a href="dashboard.html" class="nav-link">📊 Dashboard</a>
+        <a href="calendar.html" class="nav-link">📅 Calendar</a>
+        <a href="lotto.html" class="nav-link active">💰 Lottery</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ====== Main Content ====== -->
+  <div class="main-container">
+    <div class="container">
+      <!-- PANEL ซ้าย: ฟอร์ม -->
+      <div>
+        <h1>ตัวช่วยทำภาพผลสลากฯ</h1>
+        <p class="subtitle">
+          ระบบจะใช้ tvdlotto.png เป็นเทมเพลต กรอกเลขรางวัลแล้วดาวน์โหลดภาพ
+          <br><small style="font-size: 0.8em; color: var(--text-muted);">Ver.2.0 เพิ่มฟังชั่นการทำประกาศรางวัลสลากกินแบ่ง - แก้ไข UI บางส่วน</small>
+        </p>
+
+        <div class="section-title">1. ข้อมูลงวดสลาก</div>
+        <label for="drawDate">วันที่ออกรางวัล (ตัวอย่าง: 16 พฤศจิกายน 2568)</label>
+        <input type="text" id="drawDate" placeholder="16 พฤศจิกายน 2568" value="16 พฤศจิกายน 2568" />
+
+        <div class="section-title">2. เลขรางวัล</div>
+        <label for="prize1">รางวัลที่ 1 (6 หลัก)</label>
+        <input type="text" id="prize1" maxlength="6" placeholder="059696" value="000000" />
+
+        <div class="grid">
+          <div>
+            <label for="front3_1">เลขหน้า 3 ตัว ชุดที่ 1</label>
+            <input type="text" id="front3_1" maxlength="3" placeholder="955" value="000" />
+          </div>
+          <div>
+            <label for="front3_2">เลขหน้า 3 ตัว ชุดที่ 2</label>
+            <input type="text" id="front3_2" maxlength="3" placeholder="531" value="000" />
+          </div>
+          <div>
+            <label for="last3_1">เลขท้าย 3 ตัว ชุดที่ 1</label>
+            <input type="text" id="last3_1" maxlength="3" placeholder="889" value="000" />
+          </div>
+          <div>
+            <label for="last3_2">เลขท้าย 3 ตัว ชุดที่ 2</label>
+            <input type="text" id="last3_2" maxlength="3" placeholder="476" value="000" />
+          </div>
+        </div>
+
+        <label for="last2">เลขท้าย 2 ตัว</label>
+        <input type="text" id="last2" maxlength="2" placeholder="61" value="00" />
+
+        <button class="btn primary" id="downloadBtn">
+          💾 ดาวน์โหลดภาพ PNG
+        </button>
+
+        <div class="note">
+          📝 จะได้ภาพขนาด 1040x1300px
+        </div>
+      </div>
+
+      <!-- PANEL ขวา: PREVIEW -->
+      <div>
+        <div class="section-title">ตัวอย่างภาพที่จะได้</div>
+        <div class="preview-wrapper">
+          <canvas id="previewCanvas" width="1050" height="1400"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById("previewCanvas");
+    const ctx = canvas.getContext("2d");
+
+    const bgImage = new Image();
+    let bgLoaded = false;
+
+    // === โหลด tvdlotto.png อัตโนมัติ ===
+    bgImage.onload = () => {
+      bgLoaded = true;
+      canvas.width = bgImage.width;
+      canvas.height = bgImage.height;
+      draw();
+    };
+    bgImage.onerror = () => {
+      console.error("ไม่สามารถโหลด tvdlotto.png ได้");
+    };
+    bgImage.src = "tvdlotto.png";
+
+    const inputs = [
+      "drawDate",
+      "prize1",
+      "front3_1",
+      "front3_2",
+      "last3_1",
+      "last3_2",
+      "last2",
+    ];
+
+    inputs.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener("input", draw);
+        el.addEventListener("focus", (e) => {
+          e.target.select();
+        });
+      }
+    });
+
+    // === Draw function ===
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (bgLoaded) {
+        ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+      } else {
+        ctx.fillStyle = "#e0e0e0";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#999";
+        ctx.font = "16px 'FCDefragment'";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("กำลังโหลด tvdlotto.png...", canvas.width / 2, canvas.height / 2);
+        return;
+      }
+
+      const drawDate = document.getElementById("drawDate").value || "";
+      const prize1 = document.getElementById("prize1").value || "";
+      const front3_1 = document.getElementById("front3_1").value || "";
+      const front3_2 = document.getElementById("front3_2").value || "";
+      const last3_1 = document.getElementById("last3_1").value || "";
+      const last3_2 = document.getElementById("last3_2").value || "";
+      const last2 = document.getElementById("last2").value || "";
+
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      // 1. วันที่ออกรางวัล (Size 48px)
+      if (drawDate) {
+        ctx.fillStyle = "#ffeb3b";
+        ctx.font = "bold 48px 'FCDefragment'";
+        ctx.fillText(drawDate, 520, 328);
+      }
+
+      // 2. รางวัลที่ 1 (Size 203px)
+      if (prize1) {
+        ctx.fillStyle = "#000";
+        ctx.font = "bold 203px 'FCDefragment'";
+        ctx.fillText(prize1, 520, 590);
+      }
+
+      // 3. เลขหน้า 3 ตัว (Size 125px)
+      if (front3_1) {
+        ctx.fillStyle = "#000";
+        ctx.font = "bold 125px 'FCDefragment'";
+        ctx.fillText(front3_1, 208, 904);
+      }
+      if (front3_2) {
+        ctx.fillStyle = "#000";
+        ctx.font = "bold 125px 'FCDefragment'";
+        ctx.fillText(front3_2, 208, 1052);
+      }
+
+      // 4. เลขท้าย 3 ตัว (Size 125px)
+      if (last3_1) {
+        ctx.fillStyle = "#000";
+        ctx.font = "bold 125px 'FCDefragment'";
+        ctx.fillText(last3_1, 520, 904);
+      }
+      if (last3_2) {
+        ctx.fillStyle = "#000";
+        ctx.font = "bold 125px 'FCDefragment'";
+        ctx.fillText(last3_2, 520, 1052);
+      }
+
+      // 5. เลขท้าย 2 ตัว (Size 177pt)
+      if (last2) {
+        ctx.fillStyle = "#000";
+        ctx.font = "bold 177px 'FCDefragment'";
+        ctx.fillText(last2, 830, 985);
+      }
+    }
+
+    // === Download ===
+    document.getElementById("downloadBtn").addEventListener("click", function () {
+      try {
+        const drawDate = document.getElementById("drawDate").value || "lotto";
+        
+        // สร้างชื่อไฟล์จากวันที่และเวลาปัจจุบัน
+        const now = new Date();
+        const timeStr = `${String(now.getHours()).padStart(2, '0')}-${String(now.getMinutes()).padStart(2, '0')}`;
+        const dateStr = drawDate.replace(/\s+/g, '-');
+        const filename = `${timeStr}-${dateStr}.png`;
+        
+        // แปลง canvas เป็น data URL แล้วดาวน์โหลด
+        const dataUrl = canvas.toDataURL('image/png', 0.95);
+        
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = filename;
+        link.style.display = 'none';
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+      } catch(error) {
+        console.error("Download error:", error);
+        alert("เกิดข้อผิดพลาด: " + error.message);
+      }
+    });
+
+    draw();
+  </script>
+</body>
+</html>
