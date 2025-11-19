@@ -7,14 +7,14 @@
   <style>
     @font-face {
       font-family: 'FCDefragment';
-      /* 🟢 เปลี่ยนเป็น .ttf และ format('truetype') */
-      src: url('/font/FCDefragment-Regular.ttf') format('truetype');
+      /* 🟢 แก้ไข: เปลี่ยนเป็นชื่อไฟล์โดยตรง (ต้องวางไฟล์ใน Root เดียวกัน) */
+      src: url('FCDefragment-Regular.ttf') format('truetype');
       font-weight: 400;
     }
     @font-face {
       font-family: 'FCDefragment';
-      /* 🟢 เปลี่ยนเป็น .ttf และ format('truetype') */
-      src: url('/font/FCDefragment-Bold.ttf') format('truetype');
+      /* 🟢 แก้ไข: เปลี่ยนเป็นชื่อไฟล์โดยตรง (ต้องวางไฟล์ใน Root เดียวกัน) */
+      src: url('FCDefragment-Bold.ttf') format('truetype');
       font-weight: 700;
     }
 
@@ -416,7 +416,7 @@
     const bgImage = new Image();
     let bgLoaded = false;
     
-    // 🟢 คงการแก้ไข: ป้องกัน Tainted Canvas Error สำหรับการดาวน์โหลด
+    // คงการแก้ไข: ป้องกัน Tainted Canvas Error สำหรับการดาวน์โหลด
     bgImage.crossOrigin = "Anonymous";
 
     // === โหลด tvdlotto.png อัตโนมัติ ===
