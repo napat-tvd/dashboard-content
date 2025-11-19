@@ -7,12 +7,14 @@
   <style>
     @font-face {
       font-family: 'FCDefragment';
-      src: url('./font/FCDefragment-Regular.otf') format('opentype');
+      /* 🟢 แก้ไข: เปลี่ยนเป็น Absolute Path เพื่อให้ทำงานได้บน Web Server/GitHub Pages */
+      src: url('/font/FCDefragment-Regular.otf') format('opentype');
       font-weight: 400;
     }
     @font-face {
       font-family: 'FCDefragment';
-      src: url('./font/FCDefragment-Bold.otf') format('opentype');
+      /* 🟢 แก้ไข: เปลี่ยนเป็น Absolute Path */
+      src: url('/font/FCDefragment-Bold.otf') format('opentype');
       font-weight: 700;
     }
 
@@ -335,7 +337,6 @@
   </style>
 </head>
 <body>
-  <!-- ====== Navbar ====== -->
   <nav class="navbar">
     <div class="navbar-container">
       <a href="index.html" class="navbar-brand">
@@ -351,10 +352,8 @@
     </div>
   </nav>
 
-  <!-- ====== Main Content ====== -->
   <div class="main-container">
     <div class="container">
-      <!-- PANEL ซ้าย: ฟอร์ม -->
       <div>
         <h1>ตัวช่วยทำภาพผลสลากฯ</h1>
         <p class="subtitle">
@@ -401,7 +400,6 @@
         </div>
       </div>
 
-      <!-- PANEL ขวา: PREVIEW -->
       <div>
         <div class="section-title">ตัวอย่างภาพที่จะได้</div>
         <div class="preview-wrapper">
@@ -417,6 +415,9 @@
 
     const bgImage = new Image();
     let bgLoaded = false;
+    
+    // 🟢 แก้ไข: เพิ่มการตั้งค่า crossOrigin เพื่อป้องกัน Tainted Canvas Error
+    bgImage.crossOrigin = "Anonymous";
 
     // === โหลด tvdlotto.png อัตโนมัติ ===
     bgImage.onload = () => {
