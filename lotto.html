@@ -7,14 +7,14 @@
   <style>
     @font-face {
       font-family: 'FCDefragment';
-      /* 🟢 แก้ไข: เปลี่ยนเป็น Absolute Path เพื่อให้ทำงานได้บน Web Server/GitHub Pages */
-      src: url('/font/FCDefragment-Regular.ttf') format('opentype');
+      /* 🟢 เปลี่ยนเป็น .ttf และ format('truetype') */
+      src: url('/font/FCDefragment-Regular.ttf') format('truetype');
       font-weight: 400;
     }
     @font-face {
       font-family: 'FCDefragment';
-      /* 🟢 แก้ไข: เปลี่ยนเป็น Absolute Path */
-      src: url('/font/FCDefragment-Bold.ttf') format('opentype');
+      /* 🟢 เปลี่ยนเป็น .ttf และ format('truetype') */
+      src: url('/font/FCDefragment-Bold.ttf') format('truetype');
       font-weight: 700;
     }
 
@@ -416,7 +416,7 @@
     const bgImage = new Image();
     let bgLoaded = false;
     
-    // 🟢 แก้ไข: เพิ่มการตั้งค่า crossOrigin เพื่อป้องกัน Tainted Canvas Error
+    // 🟢 คงการแก้ไข: ป้องกัน Tainted Canvas Error สำหรับการดาวน์โหลด
     bgImage.crossOrigin = "Anonymous";
 
     // === โหลด tvdlotto.png อัตโนมัติ ===
@@ -461,7 +461,8 @@
         ctx.fillStyle = "#e0e0e0";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = "#999";
-        ctx.font = "16px 'FCDefragment'";
+        // ใช้ Font Family ที่กำหนด
+        ctx.font = "16px 'FCDefragment'"; 
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillText("กำลังโหลด tvdlotto.png...", canvas.width / 2, canvas.height / 2);
